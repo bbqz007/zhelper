@@ -1,6 +1,6 @@
 a lightweight wrapper of hiredis c client.
 
-origin code: https://github.com/petrohi/hiredispp
+original code: https://github.com/petrohi/hiredispp
 
 the good thing of hiredis c client is that, you can use lib(ae/ev/uv/event) easily with redis.
 
