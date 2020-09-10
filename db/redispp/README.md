@@ -13,3 +13,9 @@ this version is a fork.
 * 3. the aysnc_example_cpp11.cpp show you how to use lambda with zhelper-hiredispp.
 
 * 4. use disconnect lambda to manage your async redis connection object's lifetime.
+
+there are async samples to show:
+* 1. request/reply stateful
+* 2. pipeline, non request/reply and stateless
+* 3. publish/subscribe
+* 4. blocking pop queue
