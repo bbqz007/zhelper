@@ -151,6 +151,8 @@ int main(int argc, char** argv)
                             cout << "RR myredis disconnected" << endl;
                             (void)protector;
                         });
+        // now only the disconnect lambda is holding the protector.
+        // the protector will be managed in the event loop.
         protector.reset();
     }
     ev_loop(EV_DEFAULT, 0);
@@ -214,7 +216,7 @@ int main(int argc, char** argv)
     protector->myredis.reset(new RedisConnectionAsync(host, port));
     cout << "\n====================\n"
             "third show:\n"
-            "\n";
+            "Public/Subscribe \n";
     {
         RedisConnectionAsync& myredis = *protector->myredis;
         std::function<void()>& f = protector->f;
@@ -275,32 +277,123 @@ int main(int argc, char** argv)
         };
         int begin_after = 2;
         int repeat_every = 1;
-        ev_timer_ctx timer_ctx;
-        ev_timer_init(&timer_ctx.timer,
+        ev_timer_ctx* timer_ctx = new ev_timer_ctx;
+        ev_timer_init(&timer_ctx->timer,
                       [](struct ev_loop *loop, ev_timer *timer, int revent) {
-                           ev_timer_ctx* timer_ctx = (ev_timer_ctx*)timer;
-                           RedisConnectionAsync& myredis = *timer_ctx->myredis;
-                           // we should use another connection to publish
-                           // otherwise, a subcribed connection would get fault.
-                           Redis& pubredis = *timer_ctx->pubredis;
-                           RedisCommandBase<char> cmd;
-                           cmd << "publish 3 4";
-                           Redis::Reply reply = pubredis.doCommand(cmd);
-                           cout << cmd << endl;
-                           cout << reply << endl;
+                            ev_timer_ctx* timer_ctx = (ev_timer_ctx*)timer;
+                            RedisConnectionAsync& myredis = *timer_ctx->myredis;
+                            // we should use another connection to publish
+                            // otherwise, a subcribed connection would get fault.
+                            Redis& pubredis = *timer_ctx->pubredis;
+                            RedisCommandBase<char> cmd;
+                            cmd << "publish 3 4";
+                            Redis::Reply reply = pubredis.doCommand(cmd);
+                            cout << cmd << endl;
+                            cout << reply << endl;
                             if (++timer_ctx->repeat > 5)
                             {
                                 ev_timer_stop(loop, timer);
                                 myredis.disconnect();
+                                delete timer_ctx;
                             }
-
                       }, begin_after, repeat_every);
-        timer_ctx.repeat = 0;
-        timer_ctx.myredis = protector->myredis;
-        timer_ctx.pubredis.reset(new Redis(host, port));
-        ev_timer_start(EV_DEFAULT, &timer_ctx.timer);
-        ev_loop(EV_DEFAULT, 0);
+        timer_ctx->repeat = 0;
+        timer_ctx->myredis = protector->myredis;
+        timer_ctx->pubredis.reset(new Redis(host, port));
+        ev_timer_start(EV_DEFAULT, &timer_ctx->timer);
+        protector.reset();
     }
+    ev_loop(EV_DEFAULT, 0);
+
+    protector.reset(new protector_t);
+    protector->myredis.reset(new RedisConnectionAsync(host, port));
+    cout << "\n====================\n"
+            "fourth show:\n"
+            "you should use a specified connection to do block pops\n"
+            "it will block the pipeline of this connection\n"
+            "you should use one thread to block pop just like poll\n";
+    {
+        RedisConnectionAsync& myredis = *protector->myredis;
+        std::function<void()>& f = protector->f;
+        f = [&]() {
+            RedisCommandBase<char> cmd;
+            cmd << "blpop qa 3";
+            myredis.execAsyncCommand(cmd,
+                                 [&](RedisConnectionAsync& ac, Redis::Element* reply){
+                                     cout << "<blpop qa 3> returns" << endl;
+                                     try {
+                                        if (reply) {
+                                            reply->checkError();
+                                        }
+                                        else {
+                                            throw RedisException(std::string("disconnected"));
+                                        }
+                                        cout << *reply << endl;
+                                     }
+                                     catch (const hiredispp::RedisException& ex) {
+                                         cout<< ex.what() <<endl;
+                                         ac.disconnect();
+                                     }
+                                     if (REDIS_REPLY_NIL == reply->get()->type)
+                                     {
+                                         cout << "timeout" << endl;
+                                         ac.disconnect();
+                                     }
+                                     else
+                                     {
+                                         f();
+                                         cout << "a new async blpop has been sent" << endl;
+                                         cout << "do payload" << endl;
+                                     }
+                                 });
+        };
+        myredis.connect([&](boost::shared_ptr<RedisException>& ex) {
+                            cout << "LIFO myredis connected" << endl;
+                            f();
+                        },
+                        [protector](boost::shared_ptr<RedisException>& ex) {
+                            cout << "LIFO myredis disconnected" << endl;
+                        });
+
+        struct ev_timer_ctx
+        {
+            ev_timer timer;
+            boost::shared_ptr<RedisConnectionAsync> myredis;
+            boost::shared_ptr<Redis> pushredis;
+            int repeat;
+        };
+        int begin_after = 2;
+        int repeat_every = 2;
+        ev_timer_ctx* timer_ctx = new ev_timer_ctx;
+        ev_timer_init(&timer_ctx->timer,
+                      [](struct ev_loop *loop, ev_timer *timer, int revent) {
+                            ev_timer_ctx* timer_ctx = (ev_timer_ctx*)timer;
+                            RedisConnectionAsync& myredis = *timer_ctx->myredis;
+                            // we should use another connection to publish
+                            // otherwise, a subcribed connection would get fault.
+                            Redis& pushredis = *timer_ctx->pushredis;
+                            RedisCommandBase<char> cmd;
+                            cmd << "lpush qa 1 2 3 4";
+                            Redis::Reply reply = pushredis.doCommand(cmd);
+                            cout << cmd << endl;
+                            cout << reply << endl;
+                            if (++timer_ctx->repeat > 5)
+                            {
+                                ev_timer_stop(loop, timer);
+                                delete timer_ctx;
+                            }
+                      }, begin_after, repeat_every);
+        timer_ctx->repeat = 0;
+        timer_ctx->myredis = protector->myredis;
+        timer_ctx->pushredis.reset(new Redis(host, port));
+        ev_timer_start(EV_DEFAULT, &timer_ctx->timer);
+        protector.reset();
+    }
+    ev_loop(EV_DEFAULT, 0);
+
+    cout << "\n====================\n"
+            "all shows are end:\n";
+
 
     return 0;
 }
