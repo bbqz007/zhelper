@@ -9,7 +9,7 @@ each slab do stats for lack, active, peak.
 
 when a slab pool runs out, fall back to malloc/free.
 
-it is helpfull for short-term usage of memoies in multi-threading.
+it is helpfull for short-term usage of memories in multi-threading.
 
 it is **not** a full solution of every thing.
 
