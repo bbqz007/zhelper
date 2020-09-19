@@ -1,4 +1,5 @@
 ## a slab allocator.
+it has many slab pools of different sizes based 2^.
 
 each slab pool has independent synchronours lock and quota, which can be configured by template params.
 
