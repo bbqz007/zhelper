@@ -5,7 +5,7 @@ it does not help you save memory, but avoid memory loose.
 
 each slab pool has independent synchronours lock and quota, which can be configured by template params.
 
-each slab do stats for lack, active, peak.
+each slab do stats for lack, active, peak, requrie.
 
 when a slab pool runs out, fall back to malloc/free.
 
