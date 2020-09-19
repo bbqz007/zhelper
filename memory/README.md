@@ -1,4 +1,4 @@
-##a slab allocator.
+## a slab allocator.
 
 each slab pool has independent synchronours lock and quota, which can be configured by template params.
 
