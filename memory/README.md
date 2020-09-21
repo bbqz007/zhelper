@@ -20,7 +20,7 @@ you should not use it to overload the global new/delete.
 
 slab allocator is using std containers, which will call new during allocator's constructure.
 
-that would call instance many times during allocator's constructure, and cause dead lock.
+that would call the singleton instance many times during allocator's constructure, and cause dead lock.
 
 solution 1:
 
