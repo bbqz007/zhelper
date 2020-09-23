@@ -1,4 +1,6 @@
 ## a slab allocator.
+a thinking similar to slab cache in linux kernel.
+
 it has many slab pools of different sizes based 2^.
 
 it does not help you save memory, but avoid memory loose.
