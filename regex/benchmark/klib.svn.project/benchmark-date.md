@@ -169,3 +169,11 @@ real	0m0.369s
 user	0m0.320s
 sys	0m0.090s
 ```
+```
+./noop/test.pl
+0/1086077
+
+real	0m0.440s
+user	0m0.390s
+sys	0m0.100s
+```
