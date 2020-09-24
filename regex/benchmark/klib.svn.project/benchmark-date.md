@@ -1,3 +1,6 @@
+platform: altarch centos
+cpu: arm a72@2.3Ghz
+threads: 1
 ```
 ./tcl/test
 000668/1086077
