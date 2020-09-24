@@ -80,10 +80,11 @@ sys	0m0.090s
 ```
 ```
 ./perl/test.pl
+668/1086077
 
-real	0m0.012s
-user	0m0.000s
-sys	0m0.020s
+real	0m0.690s
+user	0m0.630s
+sys	0m0.100s
 ```
 ```
 ./python/test.py
