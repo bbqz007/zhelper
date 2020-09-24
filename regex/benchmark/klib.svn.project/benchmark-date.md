@@ -161,3 +161,11 @@ real	0m5.558s
 user	0m5.500s
 sys	0m0.130s
 ```
+```
+./noop/test.py
+000000/1086077
+
+real	0m0.369s
+user	0m0.320s
+sys	0m0.090s
+```
