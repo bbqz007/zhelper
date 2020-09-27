@@ -6,7 +6,7 @@ the thinking comes from imread and imwrite of opencv.
 
 **Writer** encode the pixel format (or color space) frame(s), and restore to file( or protocol sink).
 
-helpe you code with longjmp/setjmp, and get out of the hard work with the apis and routines and produces.
+help you to code with longjmp/setjmp, and get out of the hard work with the apis and routines and produces.
 
 Reader 
 - open()
@@ -23,8 +23,13 @@ Writer
 - write_trailer()
 
   
+## samples
+there is sample for each wrapper.
 
+## benchmark
+color space convertion, encode, decode, loading, restoring among opencv, libpng, libjpeg, ffmpeg.
 
+libpng, libjpeg, ffmpeg cases use wrapper zpng, zjpg, zffmpeg.
 
 
 
