@@ -32,7 +32,8 @@ there is sample for each wrapper.
 - decoding from memory, 
 - loading from file and decoding, 
 - encoding and restoring to file. 
-benchmarks among opencv, libpng, libjpeg, ffmpeg.
+
+benchmarks among using opencv, libpng, libjpeg, ffmpeg.
 
 libpng, libjpeg, ffmpeg cases use wrapper zpng, zjpg, zffmpeg.
 
