@@ -6,11 +6,15 @@ the thinking comes from imread and imwrite of opencv.
 
 **Writer** encode the pixel format (or color space) frame(s), and restore to file( or protocol sink).
 
+
+
 Reader 
 - open()
 - read_header()
 - read()
 - read_trailer()
+
+**Todo** do filtering on the raw frame.
 
 Writer
 - open()
