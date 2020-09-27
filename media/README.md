@@ -1,6 +1,6 @@
 ## **Reader** and **Writer** wrappers to libjpeg, libpng, ffmpeg.
 
-the thinking comes from imread and imwrite of opencv.
+the idea comes from imread and imwrite of opencv.
 
 **Reader** load file( or protocol source), and read the decoded pixel format (or color space) frame(s).
 
