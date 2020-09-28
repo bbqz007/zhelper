@@ -11,11 +11,11 @@ they are
 
 there are two mode for traverse the xml doc elements.
 
-1. scan mode,
+* 1. scan mode,
 
 you should write procedure to iterate from the root node of doc, and iterate the sub nodes or not.
 
-2. visit mode
+* 2. visit mode
 
 it is similar to visitor-pattern, the doc walk though every node, and call your visitor to allow you visit the node.
 
