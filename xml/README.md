@@ -19,3 +19,7 @@ you should write procedure to iterate from the root node of doc, and iterate the
 
 it is similar to visitor-pattern, the doc walk though every node, and call your visitor to allow you visit the node.
 
+libexpat is not more than a parser, it does not support load and save. the advantage is that, it can parse partial of xml, and you can only visit node when it is parsing xml. the disadvantage is that, you can not locate a node by name.
+
+## benchmark 
+pugixml gives a benchmark at https://pugixml.org/benchmark.html.
