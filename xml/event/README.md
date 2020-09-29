@@ -11,4 +11,14 @@ libevent and libev only support react apis.
 
 libevent can use buffer_event to emulate proact.
 
-libuv use lt-epoll by default, which libev use et-epoll. and libevent can use either by choice.
+libuv use lt-epoll by default, while libev use et-epoll. and libevent can use either by choice.
+
+** examples **
+
+* 1. libuv-example shows proact mode using uv_tcp_t.
+
+* 2. libuv-reactor shows react mode using uv_poll_t.
+
+* 3. libev-reacotr fork libuv-reactor, shows react mode using ev_poll_t.
+
+* 4. libevent-reactor fork libuv-reactor, shows react mode using event.
