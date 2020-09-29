@@ -15,10 +15,10 @@ libuv use lt-epoll by default, while libev use et-epoll. and libevent can use ei
 
 ** examples **
 
-* 1. libuv-example shows proact mode using uv_tcp_t.
+* 1. libuv-example.cpp shows proact mode using uv_tcp_t.
 
-* 2. libuv-reactor shows react mode using uv_poll_t.
+* 2. libuv-reactor.cpp shows react mode using uv_poll_t.
 
-* 3. libev-reacotr fork libuv-reactor, shows react mode using ev_poll_t.
+* 3. libev-reacotr.cpp fork libuv-reactor.cpp, shows react mode using ev_poll_t.
 
-* 4. libevent-reactor fork libuv-reactor, shows react mode using event.
+* 4. libevent-reactor.cpp fork libuv-reactor.cpp, shows react mode using event.
