@@ -28,4 +28,6 @@ there is a best threading model `ypipe`, using ypipe which is a core part of zer
 
 `yield2` model shows condition varaiable notify in multi-threading.
 
+a single thread yield 10k times in multi-cores platform, it is more expensive than multi threads etheir yields 10k times. 
 
+condition variable notify perform poorly in multi parallel threads.
