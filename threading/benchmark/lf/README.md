@@ -20,6 +20,8 @@ there is a LF-like threading model `deque`, using rlock to implement follower wa
 
 there is a best threading model `ypipe`, using ypipe which is a core part of zeromq and let a reader and a writer access message queue parallely.
 
+the cpu cycles are nearly the same, and the wall time are much different. wall time shows how much time waste for waiting and blocking.
+
 `yield0` model shows yielding in single threading.
 
 `cvnotify0` model shows condition varaiable notify in single threading.
