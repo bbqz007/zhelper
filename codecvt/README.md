@@ -29,6 +29,10 @@ benchmark projects:
 1. utf8cpp
 2. icu
 
+
+short strings.
+
+iconv and icu use 512B buffer.
 ```
 Run on (8 X 1391 MHz CPU s)
 --------------------------------------------------------------------------
@@ -49,4 +53,48 @@ BM_codecvt_zhs_utf82unicode/0        16714 ns        16713 ns        41642
 BM_icu_zhs_unicode2utf8/512/1         3458 ns         3458 ns       201838
 BM_iconv_zhs_unicode2utf8/512/1       3545 ns         3545 ns       197634
 BM_codecvt_zhs_unicode2utf8/0         2847 ns         2847 ns       245213
+```
+
+32k long strings.
+
+iconv and icu use 512B and 16KB buffer.
+```
+--------------------------------------------------------------------------
+Benchmark                                Time             CPU   Iterations
+--------------------------------------------------------------------------
+BM_iconv_us_utf82unicode/512/1     1777182 ns      1777035 ns          391
+BM_iconv_zh_utf82unicode/512/1     2246908 ns      2245508 ns          303
+BM_iconv_jp_utf82unicode/512/1     3758826 ns      3758746 ns          186
+BM_iconv_us_unicode2utf8/512/1     1508350 ns      1508149 ns          464
+BM_iconv_zh_unicode2utf8/512/1     1036028 ns      1036030 ns          672
+BM_iconv_jp_unicode2utf8/512/1     1808811 ns      1808816 ns          383
+
+BM_icu_us_utf82unicode/512/1         63485 ns        63485 ns        10955
+BM_icu_zh_utf82unicode/512/1        125597 ns       125595 ns         5563
+BM_icu_jp_utf82unicode/512/1        189859 ns       189859 ns         3673
+BM_icu_us_unicode2utf8/512/1        365970 ns       365971 ns         1888
+BM_icu_zh_unicode2utf8/512/1        192194 ns       192191 ns         3621
+BM_icu_jp_unicode2utf8/512/1        312745 ns       312746 ns         2216
+
+BM_codecvt_us_utf82unicode/0       1475513 ns      1475484 ns          472
+BM_codecvt_zh_utf82unicode/0       1260513 ns      1260462 ns          554
+BM_codecvt_jp_utf82unicode/0       1917370 ns      1917317 ns          364
+BM_codecvt_us_unicode2utf8/0        185486 ns       185482 ns         3758
+BM_codecvt_zh_unicode2utf8/0        141275 ns       141270 ns         4913
+BM_codecvt_jp_unicode2utf8/0        207942 ns       207943 ns         3359
+
+BM_iconv_us_utf82unicode/16384/1    229028 ns       229021 ns         2933
+BM_iconv_zh_utf82unicode/16384/1    172077 ns       172072 ns         4052
+BM_iconv_jp_utf82unicode/16384/1    298523 ns       298515 ns         2326
+BM_iconv_us_unicode2utf8/16384/1    242001 ns       241994 ns         2883
+BM_iconv_zh_unicode2utf8/16384/1    157954 ns       157950 ns         4408
+BM_iconv_jp_unicode2utf8/16384/1    254203 ns       254204 ns         2723
+
+BM_icu_us_utf82unicode/16384/1      103033 ns       103034 ns         6608
+BM_icu_zh_utf82unicode/16384/1      124505 ns       124504 ns         5603
+BM_icu_jp_utf82unicode/16384/1      186566 ns       186551 ns         3737
+BM_icu_us_unicode2utf8/16384/1      359124 ns       359110 ns         1928
+BM_icu_zh_unicode2utf8/16384/1      229484 ns       229477 ns         3015
+BM_icu_jp_unicode2utf8/16384/1      307557 ns       307550 ns         2251
+
 ```
