@@ -12,6 +12,7 @@
 * regex/benchmark
 * media/benchmark
 * threading/benchmark
+* codecvt/
 ## samples
 * event/zamples
 * xml/zamples
