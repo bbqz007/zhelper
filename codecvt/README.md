@@ -32,6 +32,8 @@ benchmark projects:
 
 short strings.
 
+iconv, icu and std::codecvt all generate std::string result.
+
 iconv and icu use 512B buffer.
 ```
 Run on (8 X 1391 MHz CPU s)
@@ -56,6 +58,8 @@ BM_codecvt_zhs_unicode2utf8/0         2847 ns         2847 ns       245213
 ```
 
 32k long strings.
+
+iconv, icu and std::codecvt all generate std::string result.
 
 iconv and icu use 512B and 16KB buffer.
 ```
@@ -98,3 +102,9 @@ BM_icu_zh_unicode2utf8/16384/1      229484 ns       229477 ns         3015
 BM_icu_jp_unicode2utf8/16384/1      307557 ns       307550 ns         2251
 
 ```
+
+icu is fastest in almost cases. 
+
+icu is especially good at toUnicode, while std::codecvt is especially bad at UTF8toUnicode. 
+
+iconv using more buffer can do better, while icu does not need more.
