@@ -110,6 +110,10 @@ BM_icu_jp_unicode2utf8/16384/1      307557 ns       307550 ns         2251
 
 icu is fastest in almost cases. 
 
+std::codecvt is easiest to use.
+
 icu is especially good at toUnicode, while std::codecvt is especially bad at UTF8toUnicode. 
+
+std::codecvt is especially good at UnicodetoUTF8, it plays fastest.
 
 iconv using more buffer can play better, while icu does not need more.
