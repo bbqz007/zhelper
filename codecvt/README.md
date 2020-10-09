@@ -112,4 +112,4 @@ icu is fastest in almost cases.
 
 icu is especially good at toUnicode, while std::codecvt is especially bad at UTF8toUnicode. 
 
-iconv using more buffer can do better, while icu does not need more.
+iconv using more buffer can play better, while icu does not need more.
