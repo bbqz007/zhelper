@@ -131,6 +131,7 @@ you should not use -fshort-wchar if you need locale, mbtowc, and std::codecvt_by
 c++11 does not support multiple bytes except utf8 to utf16, but to wide bytes using locale according your c library platform. MINGW use msvcrt, so wchar_t is size of 2, and CYGWIN does not. you need to use 3rd-part icu or iconv to help you do convertion between mb and utf16, and use std library to do convertion between mb and utf32. 
 
 **watch out**
+
 setlocale is not thread-safe. locale globally affect the whole c library. in other words, you can use crt to do different locale (mb coding) convertion in multithreads in the same time. unlike crt, win api does not depent to setlocale.
 
 std::locale::global() == setlocale().
