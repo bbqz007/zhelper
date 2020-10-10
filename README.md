@@ -8,6 +8,7 @@
 * media/ffmpeg/zffmpeg.h
 ## patches
 * db/redispp/hiredispp_async.h
+* web/cpprest4mingw
 ## benchmark/profile
 * db/sqlite3
 * regex/benchmark
