@@ -33,9 +33,10 @@
 
 #include <utf8.h>
 
+#include <utility>
 #include <codecvt>
-#include <cassert>
 #include <locale>
+
 #include <errno.h>
 
 void BM_template(benchmark::State& state)
@@ -139,6 +140,9 @@ vector<char> g_jp_gb;
 vector<char> g_jp_utf8_s;
 vector<char> g_jp_utf16_s;
 
+vector<char> g_us_utf32;
+vector<char> g_zh_utf32;
+vector<char> g_jp_utf32;
 void init()
 {
     g_us_utf8 = loadfile("text.us.utf8");
@@ -153,6 +157,12 @@ void init()
     g_jp_gb = loadfile("text.jp.gb18030");
     g_jp_utf8_s = loadfile("text.jp.utf8.s");
     g_jp_utf16_s = loadfile("text.jp.unicode.s");
+    if (sizeof(wchar_t) == 4)
+    {
+        g_us_utf32 = loadfile("text.us.utf32");
+        g_zh_utf32 = loadfile("text.zh.utf32");
+        g_jp_utf32 = loadfile("text.jp.utf32");
+    }
 }
 void BM_iconv_utf82unicode1(benchmark::State& state, vector<char>& in,
                            char* incode, char* outcode);
@@ -567,7 +577,92 @@ void BM_codecvt_jps_unicode2utf8(benchmark::State& state)
     BM_codecvt_unicode2utf8(state, g_jp_utf16_s);
 }
 
+////////////////
+// std::wstring_convert code sample from https://en.cppreference.com/w/cpp/locale/wstring_convert/~wstring_convert
+template<class Facet>
+struct deletable_facet : Facet
+{
+    template<class ...Args>
+    deletable_facet(Args&& ...args) : Facet(std::forward<Args>(args)...) {}
+    ~deletable_facet() {}
+};
+typedef deletable_facet<std::codecvt_byname<wchar_t, char, std::mbstate_t>> gbfacet_t;
 
+void BM_codecvt_unicode2x(benchmark::State& state, vector<char>& in, const char* cvtcode)
+{
+    //cout << std::use_facet<std::codecvt<wchar_t, char, std::mbstate_t>>(std::locale(cvtcode)).encoding() << endl;
+    while (state.KeepRunning())
+    {
+        wchar_t* inp = (wchar_t*)&in[0];
+        wchar_t* inep = (wchar_t*)(&in[0] + in.size());
+
+        std::wstring_convert<gbfacet_t, wchar_t> cvt(new gbfacet_t(cvtcode));
+        try
+        {
+            std::string str = cvt.to_bytes(inp, inep);
+            (void)str.begin();
+        }
+        catch(std::range_error& err)
+        {
+            fprintf(stderr, "range_error converted:%d/%d\n", (int)cvt.converted(), in.size());
+                         exit(0);
+        }
+    }
+}
+
+void BM_codecvt_x2unicode(benchmark::State& state, vector<char>& in, const char* cvtcode)
+{
+
+    while (state.KeepRunning())
+    {
+        char* inp = &in[0];
+        char* inep = &in[0] + in.size();
+        std::wstring_convert<gbfacet_t, wchar_t> cvt(new gbfacet_t(cvtcode));
+        try
+        {
+            std::wstring wstr =
+            cvt.from_bytes(inp, inep);
+            (void)wstr.begin();
+        }
+        catch(std::range_error& err)
+        {
+            fprintf(stderr, "range_error converted:%d/%d\n", (int)cvt.converted(), in.size());
+                         exit(0);
+        }
+    }
+}
+void BM_codecvt_us_unicode2gb(benchmark::State& state)
+{
+    BM_codecvt_unicode2x(state,
+                         (sizeof(wchar_t) == 4) ? g_us_utf32 : g_us_utf16, "zh_CN.gb18030");
+}
+
+void BM_codecvt_zh_unicode2gb(benchmark::State& state)
+{
+    BM_codecvt_unicode2x(state,
+                         (sizeof(wchar_t) == 4) ? g_zh_utf32 : g_zh_utf16, "zh_CN.gb18030");
+}
+
+void BM_codecvt_jp_unicode2gb(benchmark::State& state)
+{
+    BM_codecvt_unicode2x(state,
+                         (sizeof(wchar_t) == 4) ? g_jp_utf32 : g_jp_utf16, "zh_CN.gb18030");
+}
+
+void BM_codecvt_us_gb2unicode(benchmark::State& state)
+{
+    BM_codecvt_x2unicode(state, g_us_utf8, "zh_CN.gb18030");
+}
+
+void BM_codecvt_zh_gb2unicode(benchmark::State& state)
+{
+    BM_codecvt_x2unicode(state, g_zh_gb, "zh_CN.gb18030");
+}
+
+void BM_codecvt_jp_gb2unicode(benchmark::State& state)
+{
+    BM_codecvt_x2unicode(state, g_jp_gb, "zh_CN.gb18030");
+}
 
 ////////////////
 
@@ -983,6 +1078,14 @@ BENCHMARK(BM_codecvt_jp_utf82unicode)->Arg(0)->Arg(1)->Arg(2);
 BENCHMARK(BM_codecvt_us_unicode2utf8)->Arg(0)->Arg(1)->Arg(2);
 BENCHMARK(BM_codecvt_zh_unicode2utf8)->Arg(0)->Arg(1)->Arg(2);
 BENCHMARK(BM_codecvt_jp_unicode2utf8)->Arg(0)->Arg(1)->Arg(2);
+
+BENCHMARK(BM_codecvt_us_gb2unicode);
+BENCHMARK(BM_codecvt_zh_gb2unicode);
+BENCHMARK(BM_codecvt_jp_gb2unicode);
+BENCHMARK(BM_codecvt_us_unicode2gb);
+BENCHMARK(BM_codecvt_zh_unicode2gb);
+BENCHMARK(BM_codecvt_jp_unicode2gb);
+
 
 BENCHMARK(BM_iconv_jps_utf82unicode)->Apply(BM_iconv_CustomArguments);//->Ranges({{1<<9, 1<<16}, {0,1}})->Ranges({{1<<13, 1<<14}, {0,1}});
 BENCHMARK(BM_iconv_jps_unicode2utf8)->Apply(BM_iconv_CustomArguments);//->Ranges({{1<<9, 1<<16}, {0,1}})->Ranges({{1<<13, 1<<14}, {0,1}});
