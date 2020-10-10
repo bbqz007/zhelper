@@ -118,5 +118,14 @@ std::codecvt is especially good at UnicodetoUTF8, it plays fastest.
 
 iconv using more buffer can play better, while icu nearly does not need more.
 
-**other**
+**windows platform**
+
 if you are working in windows platform, you can referent to this post https://github.com/GiovanniDicanio/UnicodeConversions.
+
+**linux platform**
+
+wchar_t is size of 4 bytes. 
+
+you should not use -fshort-wchar if you need locale, mbtowc, and std::codecvt_byname. wide bytes in linux means utf32, and utf16 in windows.
+
+c++11 does not support multiple bytes except utf8 to utf16, but to wide bytes using locale according your c library platform. MINGW use msvcrt, so wchar_t is size of 2, and CYGWIN does not. you need to use 3rd-part icu or iconv to help you do convertion between mb and utf16, and use std library to do convertion between mb and utf32. 
