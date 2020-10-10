@@ -1,1 +1,1 @@
-https://github.com/bbqz007/cpprest4mingw
+https://github.com/bbqz007/cpprestsdk4mingw
