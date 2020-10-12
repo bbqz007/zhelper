@@ -4,24 +4,8 @@ cpu: arm a72@2.3Ghz
 
 threads: 1
 
-```
-./glib/test
-000668/1086077
-
-real	0m0.778s
-user	0m0.710s
-sys	0m0.120s
-```
 
 
-```
-./onig/test-posix
-000668/1086077
-
-real	0m0.495s
-user	0m0.420s
-sys	0m0.130s
-```
 ```
 ./pcre/test-posix
 1086077/1086077
@@ -31,21 +15,20 @@ user	0m0.390s
 sys	0m0.110s
 ```
 ```
-./pcre/test-cpp
+./onig/test-posix
 000668/1086077
 
-real	0m0.726s
-user	0m0.710s
-sys	0m0.070s
+real	0m0.495s
+user	0m0.420s
+sys	0m0.130s
 ```
-
 ```
-./re2/test
+./regex/test
 000668/1086077
 
-real	0m0.816s
-user	0m0.780s
-sys	0m0.090s
+real	0m0.603s
+user	0m0.560s
+sys	0m0.100s
 ```
 ```
 ./perl/test.pl
@@ -55,7 +38,30 @@ real	0m0.690s
 user	0m0.630s
 sys	0m0.100s
 ```
+```
+./pcre/test-cpp
+000668/1086077
 
+real	0m0.726s
+user	0m0.710s
+sys	0m0.070s
+```
+```
+./glib/test
+000668/1086077
+
+real	0m0.778s
+user	0m0.710s
+sys	0m0.120s
+```
+```
+./re2/test
+000668/1086077
+
+real	0m0.816s
+user	0m0.780s
+sys	0m0.090s
+```
 ```
 ./boost/test
 000668/1086077
@@ -63,15 +69,6 @@ sys	0m0.100s
 real	0m0.899s
 user	0m0.840s
 sys	0m0.110s
-```
-
-```
-./regex/test
-000668/1086077
-
-real	0m0.603s
-user	0m0.560s
-sys	0m0.100s
 ```
 ```
 ./regexp9/test
