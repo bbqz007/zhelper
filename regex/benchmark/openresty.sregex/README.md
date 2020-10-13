@@ -6,6 +6,6 @@ it is not true on other platforms such as aarch64.
 
 results tested on x64 platform in the project homepage, sregex > re2 > pcre2.jit > pcre.jit > pcre2 > pcre in almost cases. pcre and pcre2 perform very very poorly, so much worse than jit.
 
-but in aarch64 platform, sregex under pl perform poorly, re2 does as well, jit pcre is just a little better than non-jit pcre. pcre is not so much from pcre2.
+but in aarch64 platform, sregex under pl perform poorly, re2 poorly too, jit pcre is just a little better than non-jit pcre. pcre is not so much from pcre2.
 
 i doubt that the players playing well on x64 use sse2 which aarch64 does not have.
