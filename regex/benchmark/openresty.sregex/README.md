@@ -9,3 +9,10 @@ results tested on x64 platform in the project homepage, sregex > re2 > pcre2.jit
 but in aarch64 platform, sregex under pl perform poorly, re2 poorly too, jit pcre is just a little better than non-jit pcre. pcre is not so much from pcre2.
 
 i doubt that the players playing well on x64 use sse2 which aarch64 does not have.
+
+you should install to run the benchmark
+* pcre-devel
+* pcre2-devel
+* re2-devel
+* perl-IPC/Run, perl-IPC/Run3, perl-List/????
+* https://raw.githubusercontent.com/ronsavage/GraphViz/master/lib/GraphViz.pm
