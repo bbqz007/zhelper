@@ -82,13 +82,17 @@ void change_poll(reactor_tcp* rr_tcp, int events) {
                                     rr_tcp->wrpos_ += (size_t)max(nwritten, 0);
                                     if (rr_tcp->wrpos_ == rr_tcp->nread_)
                                     {
+#ifndef NO_EVENT_ASSIGN_ISSUE
                                         change_poll(rr_tcp, EV_READ|EV_PERSIST|EV_ET);
+#endif
                                         finish = true;
                                     }
                                     else
                                     {
                                         cout << this_thread::get_id() << ": add writable to poll" << endl;
+#ifndef NO_EVENT_ASSIGN_ISSUE
                                         change_poll(rr_tcp, EV_READ|EV_WRITE|EV_PERSIST|EV_ET);
+#endif
                                     }
                                 return finish;
                             }
@@ -101,7 +105,7 @@ void change_poll(reactor_tcp* rr_tcp, int events) {
                             // you should read by yourself and manage buffer
                             size_t toread = rr_tcp->inbuf_.capacity();
                             rr_tcp->nread_ = read(rr_tcp->sock_, &rr_tcp->inbuf_[0], toread);
-                            if (rr_tcp->nread_ < 0)
+                            if (rr_tcp->nread_ == 0 && rr_tcp->nread_ == (size_t)-1)
                             {
                                 finish = true;
                             }
@@ -189,7 +193,11 @@ int main()
                 rr_tcp->inuse_ = false;
                 rr_tcp->event_ = shared_ptr<struct event>(event_new(evutil_default_reactor(), rr_tcp->sock_, 0, 0, 0), [](struct event* event) { event_free(event); });
 
+#ifndef NO_EVENT_ASSIGN_ISSUE
+				change_poll(rr_tcp, EV_READ|EV_WRITE|EV_PERSIST|EV_ET);
+#else
                 change_poll(rr_tcp, EV_READ|EV_PERSIST|EV_ET);
+#endif
             }
             else
             {
