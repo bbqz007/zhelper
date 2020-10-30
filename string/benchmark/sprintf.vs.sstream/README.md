@@ -1,16 +1,16 @@
 # sprintf vs stringstream
 
 output labels and argurments. 
-
+```c++
 sprintf(buf, "i = %d; i64 = %lld; d = %f; s = %s", i, i64, d, s);
-
+```
 vs
-
+```c++
 ss << "i = " << i
 			<< "; i64 = " << i64
 			<< "; d = " << d
 			<< "; s = " << s;
-      
+```
 that is unfair.
 
 so i let sprintf to do appending like stringstream does, and let stringstream use buffer and avoid object constructure and destructure.
