@@ -25,7 +25,7 @@ sprintf2_? and stream2_? output labels and argurments.
 
 ?_usebuf althought use buffer but still construct and destruct stringstream everytime.
 
-_usebuf2 althought use buffer and avoid stringstream constructure and destructure.
+?_usebuf2 althought use buffer and avoid stringstream constructure and destructure.
 
 
 ```bash
@@ -56,10 +56,10 @@ BM_sstream2_usebuf2                    1737 ns         1737 ns       400074
 
 the costs of constructure and destructure of stringstream are high. see BM_sstream_noop.
 
-BM_sprintf_labels worse than BM_sstream_labels_usebuf2
+BM_sprintf_labels **worse** than BM_sstream_labels_usebuf2
 
-BM_sprintf_append_labels better than BM_sstream_append_labels_usebuf2
+BM_sprintf_append_labels **better** than BM_sstream_append_labels_usebuf2
 
-BM_sprintf_append_args worse than BM_sstream_append_args_usebuf2
+BM_sprintf_append_args **worse** than BM_sstream_append_args_usebuf2
 
-BM_sprintf2_append worse than BM_sstream2_usebuf2
+BM_sprintf2_append **worse** than BM_sstream2_usebuf2
