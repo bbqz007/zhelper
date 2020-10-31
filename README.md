@@ -12,8 +12,10 @@
 ## benchmark/profile
 * db/sqlite3
 * regex/benchmark
+* regex/profile/std.5x.boost
 * media/benchmark
 * threading/benchmark
+* string/benchmark/sprinf.vs.sstream
 * codecvt/
 ## samples
 * event/zamples
