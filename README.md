@@ -11,6 +11,7 @@
 * web/cpprest4mingw
 ## benchmark/profile
 * db/sqlite3
+* db/benchmark/nosql
 * regex/benchmark
 * regex/profile/std.5x.boost
 * media/benchmark
