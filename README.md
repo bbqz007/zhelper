@@ -1,6 +1,8 @@
 ## projects
 * gui/qt5/zhelper-qt5Widgets
 * gui/wxWidgets/zhelper-wxWidgets
+## util
+* memory/zbuffer.h
 ## C++Wrappers
 * db/bdb/zdb_cxx.h
 * media/jpg/zjpg.h
