@@ -1,13 +1,31 @@
 ## memcpy 96*2 bytes
-test:
+benchmarkitem
 ```bash
 BM_memcpy/$dst_align/$src_align
 ```
-best
+platform
+```bash
+Model name:            AArch64 Processor rev 1 (aarch64)
+CPU max MHz:           2314.0000
+CPU min MHz:           221.0000
+BogoMIPS:              26.00
+```
+**best** while both dst and src align to 8 bytes
 ```bash
 BM_memcpy/0/0               28.7 ns         28.7 ns     25102541
+BM_memcpy/0/8               28.4 ns         28.4 ns     25118797
+BM_memcpy/8/24              28.8 ns         28.8 ns     24638197
 ```
-worst
+**not bad** while the dst align to 8 bytes and the src not
+```bash
+BM_memcpy/0/1               39.4 ns         39.4 ns     17721291
+```
+**bad** even though src align to 8 bytes
+```bash
+BM_memcpy/5/8               45.6 ns         45.6 ns     15235358
+BM_memcpy/6/8               45.3 ns         45.3 ns     15325185
+```
+**worst**
 ```bash
 BM_memcpy/2/4               56.7 ns         56.7 ns     14496792
 ```
