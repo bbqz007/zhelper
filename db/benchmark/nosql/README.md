@@ -11,12 +11,12 @@ http://www.lmdb.tech/bench/microbench/
 
 **db_bench_bdb2.cc** add put(DB_MULTIPLE) for batch and checkpoint to remove log.
 
-# Why patches
+# What do patches do
 although sqlite3 has in memory mode, but it is not a memory database. you could use lmdb for nosql memory database. sqlite3 cannot be better than leveldb even under in-memory mode in benchmark case.
 
 bdb can do as in-memory mode, but it just to make it could work on some no-disk platform, not for performance.
 
-bdb has a api for multiple writing for batch with flag DB_MULTIPLE which the original benchmark code never use. i add it, and it performances better.
+bdb has a api for multiple writing for batch with flag DB_MULTIPLE which the original benchmark code never use. i add it, but it never performances well, and so disappointing. partition does not bring a good performance.
 
 # conclution
 1. lmdb is a memory database.
