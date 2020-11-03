@@ -26,6 +26,7 @@ bdb has a api for multiple writing for batch with flag DB_MULTIPLE which the ori
   192 root      20   0       0      0      0 R  84.6  0.0  53:44.23 mmcqd/0   
  9106 root      20   0  334264 162636 157324 R  43.3  4.2   0:08.84 db_bench+ 
  196340	/tmp/leveldbtest-0/dbbench_mdb-1
+ fillrandbatch :      14.442 micros/op;    7.7 MB/s    
 ```
 2. leveldb good performance and less memory
 ```
