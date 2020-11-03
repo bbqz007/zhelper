@@ -1,4 +1,16 @@
 ## memcpy 96*2 bytes
+test:
+```bash
+BM_memcpy/$dst_align/$src_align
+```
+best
+```bash
+BM_memcpy/0/0               28.7 ns         28.7 ns     25102541
+```
+worst
+```bash
+BM_memcpy/2/4               56.7 ns         56.7 ns     14496792
+```
 ```bash
 Benchmark                      Time             CPU   Iterations
 ----------------------------------------------------------------
