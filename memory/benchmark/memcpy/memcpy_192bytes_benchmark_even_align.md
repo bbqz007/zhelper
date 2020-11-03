@@ -16,16 +16,16 @@ BM_memcpy/0/0               28.7 ns         28.7 ns     25102541
 BM_memcpy/0/8               28.4 ns         28.4 ns     25118797
 BM_memcpy/8/24              28.8 ns         28.8 ns     24638197
 ```
-**not bad** while the dst align to 8 bytes and the src not
+**not bad (1.39x best)** while the dst align to 8 bytes and the src not
 ```bash
 BM_memcpy/0/1               39.4 ns         39.4 ns     17721291
 ```
-**bad** even though src align to 8 bytes
+**bad (1.60x best)** even though src align to 8 bytes
 ```bash
 BM_memcpy/5/8               45.6 ns         45.6 ns     15235358
 BM_memcpy/6/8               45.3 ns         45.3 ns     15325185
 ```
-**worst**
+**worst (2x best)**
 ```bash
 BM_memcpy/2/4               56.7 ns         56.7 ns     14496792
 ```
