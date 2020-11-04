@@ -53,8 +53,26 @@ Entries:    500000
 fillrandbatch :     103.289 micros/op;    1.1 MB/s   
 readrandom   :      18.344 micros/op;                
 Entries:   1000000
-fillrandbatch :     103.289 micros/op;    0.7 MB/s  
+fillrandbatch :     123.185 micros/op;    0.9 MB/s 
+readrandom   :      22.032 micros/op;  
 ```
+4. bdb's partition can raise write performance when the count is 50W. after the number there is no affect. but writing is still bad, even far from sqlite3.
+```
+--use_partition=1
+Entries:    500000
+fillrandbatch :      68.046 micros/op;    1.6 MB/s   
+readrandom   :      20.343 micros/op;  
+--use_partition=0
+Entries:    500000
+fillrandbatch :      97.021 micros/op;    1.1 MB/s   
+readrandom   :      20.520 micros/op;         
+sqlite3
+Entries:    500000
+fillrandbatch :      47.326 micros/op;    2.3 MB/s   
+readrandom   :      40.542 micros/op;  
+```
+5. bdb's reading is twice faster than sqlite3, but writing is poor.
+
 3. bdb fits small values (size < 1024 byte), reading is faster than sqlite3.
 
 4. sqlite3 is good at large values, while bdb is super poor.
