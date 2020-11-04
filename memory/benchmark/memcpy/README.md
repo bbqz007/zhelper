@@ -9,3 +9,10 @@ i choose the glibc-2.28 with which the centos 8 release.
 you can just compile this memcpy.S rather than a whole glibc.
 
 it performances twice better than the glibc-2.17, no memory alignment problems.
+
+i rename memcpy to memcpy28 in memcpy.S
+
+you can build it entering path sysdeps/aarch64 by running
+```bash
+gcc -I. -I../.. -c memcpy.S
+```
