@@ -9,7 +9,7 @@ http://www.lmdb.tech/bench/microbench/
 
 **db_bench_sqlite3.cc** add in memory mode, --use_in_memory=1
 
-**db_bench_bdb2.cc** add put(DB_MULTIPLE) for batch and checkpoint to remove log.
+**db_bench_bdb2.cc** add put(DB_MULTIPLE) for batch and checkpoint to remove logs, add --use_partition, add --page_size.
 
 # What do patches do
 although sqlite3 has in memory mode, but it is not a memory database. you could use lmdb for nosql memory database. sqlite3 cannot be better than leveldb even under in-memory mode in benchmark case.
@@ -19,7 +19,7 @@ bdb can do as in-memory mode, but it just to make it could work on some no-disk 
 bdb has a api for multiple writing for batch with flag DB_MULTIPLE which the original benchmark code never use. i add it, but it never performances well, and so disappointing. partition does not bring a good performance.
 
 # conclution
-1. lmdb is a memory database.
+1. lmdb is a memory database. you need enough memory to run it.
 ```
   PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND   
   191 root      20   0       0      0      0 S  99.3  0.0 128:32.03 exe_cq    
@@ -35,7 +35,26 @@ fillrandbatch :      13.590 micros/op;    8.1 MB/s
   PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND   
  9082 root      20   0  254636  13740   1636 S 108.2  0.4   0:16.26 db_bench 
 ```
-
+3. bdb's performance falls down when the count is 10W, 20W, 30W, 40W. -15%~-20% every 10W records.
+```
+Entries:    100000
+fillrandbatch :      38.352 micros/op;    2.9 MB/s   
+readrandom   :       9.150 micros/op;   
+Entries:    200000
+fillrandbatch :      44.806 micros/op;    2.5 MB/s   
+readrandom   :      17.706 micros/op;   
+Entries:    300000
+fillrandbatch :      70.345 micros/op;    1.6 MB/s   
+readrandom   :      18.748 micros/op;     
+Entries:    400000
+fillrandbatch :      85.569 micros/op;    1.3 MB/s   
+readrandom   :      18.565 micros/op;                
+Entries:    500000
+fillrandbatch :     103.289 micros/op;    1.1 MB/s   
+readrandom   :      18.344 micros/op;                
+Entries:   1000000
+fillrandbatch :     103.289 micros/op;    0.7 MB/s  
+```
 3. bdb fits small values (size < 1024 byte), reading is faster than sqlite3.
 
 4. sqlite3 is good at large values, while bdb is super poor.
