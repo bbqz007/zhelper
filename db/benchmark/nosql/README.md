@@ -14,7 +14,7 @@ http://www.lmdb.tech/bench/microbench/
 # What do patches do
 although sqlite3 has in memory mode, but it is not a memory database. you could use lmdb for nosql memory database. sqlite3 cannot be better than leveldb even under in-memory mode in benchmark case.
 
-bdb can do as in-memory mode, but it just to make it could work on some no-disk platform, not for performance.
+bdb can run as in-memory mode, but that just aim to make it could work on some no-disk platform, not for performance.
 
 bdb has a api for multiple writing for batch with flag DB_MULTIPLE which the original benchmark code never use. i add it, but it never performances well, and so disappointing. partition does not bring a good performance.
 
