@@ -87,7 +87,71 @@ static bool FLAGS_use_same_env = false;
 
 static bool FLAGS_new_shuff = false;
 
+static bool FLAGS_use_partition = false;
+
 static int run_round = 0;
+
+__attribute_noinline__
+void volatilecpy(void* dst, const void* src, size_t sz)
+{
+    if (0 == (((intptr_t)dst & 7) | ((intptr_t)src & 7)))
+        (void)0;
+    if (sz > 512)
+        (void)0;
+    register char* pd = (char*) dst;
+    register char* ps = (char*) src;
+    if (sz & 31)
+    {
+        size_t partial = sz & 7;
+        switch(partial)
+        {
+    case 1:
+        pd[0] = ps[0];
+        break;
+    case 2:
+        *(short*)pd = *(short*)ps;
+        break;
+    case 3:
+        pd[0] = ps[0];
+        *(short*)(pd+1) = *(short*)(ps+1);
+        break;
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+        *(int*)pd = *(int*)ps;
+        *(int*)(pd + partial - 4) = *(int*)(ps + partial - 4);
+        break;
+        }
+        pd += partial;
+        ps += partial;
+
+        partial = sz & 24;
+        switch(partial)
+        {
+    case 24:
+        *(int64_t*)(pd + 16) = *(int64_t*)(ps + 16);
+    case 16:
+        *(int64_t*)(pd + 8) = *(int64_t*)(ps + 8);
+    case 8:
+        *(int64_t*)pd = *(int64_t*)ps;
+        break;
+        }
+        pd += partial;
+        ps += partial;
+    }
+    size_t odd = sz & ~(size_t)31;
+    register volatile int64_t* di64p = (volatile int64_t*)pd;
+    register volatile int64_t* si64p = (volatile int64_t*)ps;
+
+    for (int i = 0; i < odd; i += 32, di64p += 4, si64p += 4)
+    {
+        *di64p = *si64p;
+        *(1+di64p) = *(1+si64p);
+        *(2+di64p) = *(2+si64p);
+        *(3+di64p) = *(3+si64p);
+    }
+}
 
 namespace leveldb {
 
@@ -465,6 +529,23 @@ class Benchmark {
     }
 	rc = db_create(&dbh_, db_, 0);
 	rc = dbh_->set_pagesize(dbh_, FLAGS_page_size);
+	DBT partkey[] = {
+        //{(void*)"0000000000100000", 16 },
+        {(void*)"0000000000200000",16 },
+        //{(void*)"0000000000300000",16 },
+        {(void*)"0000000000400000",16 },
+        //{(void*)"0000000000500000",16 },
+        {(void*)"0000000000600000",16 },
+        //{(void*)"0000000000700000",16 },
+        {(void*)"0000000000800000",16 },
+        //{(void*)"0000000000900000",16 },
+        {(void*)"0000000001000000",16 }
+	};
+	if (FLAGS_use_partition)
+        rc = dbh_->set_partition(dbh_, sizeof(partkey)/sizeof(DBT) + 1, partkey, 0);
+	//rc = dbh_->set_bt_compare(dbh_, [](DB*, const DBT* L, const DBT* R){
+    //                        return memcmp(L->data, R->data, 16);
+     //                      });
 	rc = dbh_->open(dbh_, NULL, "data.bdb", NULL, DB_BTREE, DB_AUTO_COMMIT|DB_CREATE|DB_THREAD, 0664);
   }
 
@@ -513,10 +594,10 @@ class Benchmark {
 	void *kd, *dd;
 	if (entries_per_batch > 1)
     {
-        mkey.ulen = (16 + sizeof(uint32_t) * 2) * entries_per_batch + sizeof(uint32_t);
+        mkey.ulen = (16 + sizeof(uint32_t) * 2) * entries_per_batch + sizeof(uint32_t) *8;
         kd = malloc(mkey.ulen);
         mkey.data = kd;
-        mval.ulen = (value_size + sizeof(uint32_t) * 2) * entries_per_batch  + sizeof(uint32_t);
+        mval.ulen = (value_size + sizeof(uint32_t) * 2) * entries_per_batch  + sizeof(uint32_t) *8;
         dd = malloc(mval.ulen);
         mval.data = dd;
         for (int sz = 0; sz < mval.ulen; sz += (1<<20))
@@ -531,7 +612,7 @@ class Benchmark {
     {
         if (i > 0 && 0 == (i % 100000))
         {
-            //db_->txn_checkpoint(db_,0,0,DB_FORCE);
+            db_->txn_checkpoint(db_,0,0,DB_FORCE);
             dbh_->close(dbh_, 0);
             db_->close(db_, 0);
             db_ = NULL;
@@ -569,14 +650,17 @@ class Benchmark {
           for (int j=0; j < entries_per_batch; j++) {
               const int k = ((order == SEQUENTIAL) ? i+j : shuff[i+j])
                             + ((FLAGS_new_shuff) ? (FLAGS_num * run_round) : 0);
+#if 1
               DB_MULTIPLE_RESERVE_NEXT(kp, &mkey, kdstp, 16);
-              int sz = 16;snprintf((char*)kdstp, 16, "%016d", k);
-              //int sz = 16;snprintf(key, sizeof(key), "%016d", k);
-              //DB_MULTIPLE_WRITE_NEXT(kp, &mkey, key, sz);
-              (void)gen_.Generate(value_size).data();
+              int sz = 16;snprintf((char*)kdstp, 17, "%016d", k);
               DB_MULTIPLE_RESERVE_NEXT(vp, &mval, vdstp, value_size);
+              memcpy(vdstp, gen_.Generate(value_size).data(), value_size);
+#else
+              int sz = 16;snprintf(key, sizeof(key), "%016d", k);
+              DB_MULTIPLE_WRITE_NEXT(kp, &mkey, key, sz);
+              DB_MULTIPLE_WRITE_NEXT(vp, &mval, (void *)gen_.Generate(value_size).data(), value_size);
+#endif
               bytes_ += sz + value_size;
-              //DB_MULTIPLE_WRITE_NEXT(vp, &mval, (void *)gen_.Generate(value_size).data(), value_size);
               FinishedSingleOp();
           }
           db_->txn_begin(db_, NULL, &txn, 0);
@@ -673,6 +757,9 @@ int main(int argc, char** argv) {
     } else if (sscanf(argv[i], "--use_existing_db=%d%c", &n, &junk) == 1 &&
                (n == 0 || n == 1)) {
       FLAGS_use_existing_db = n;
+    } else if (sscanf(argv[i], "--use_partition=%d%c", &n, &junk) == 1 &&
+               (n == 0 || n == 1)) {
+      FLAGS_use_partition = n;
     } else if (sscanf(argv[i], "--num=%d%c", &n, &junk) == 1) {
       FLAGS_num = n;
     } else if (sscanf(argv[i], "--reads=%d%c", &n, &junk) == 1) {
