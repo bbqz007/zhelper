@@ -86,7 +86,7 @@ Entries:    500000
 fillrandbatch :      47.326 micros/op;    2.3 MB/s   
 readrandom   :      40.542 micros/op;  
 ```
-5. bdb's reading is twice faster than sqlite3, but writing is poor.
+5. bdb's reading and sequance writing (small value cases) is twice faster than sqlite3, but random writing is poor.
 
 3. bdb fits small values (size < 1024 byte), reading is faster than sqlite3.
 
