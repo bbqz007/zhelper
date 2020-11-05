@@ -50,6 +50,33 @@ fillrandbatch :      13.590 micros/op;    8.1 MB/s
   PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND   
  9082 root      20   0  254636  13740   1636 S 108.2  0.4   0:16.26 db_bench 
 ```
+leveldb use mmap and multi-thread io for good performance
+```
+eveldb 20w rand batch
+strace: Process 23228 attached
+strace: Process 23229 attached                      
+fillrandbatch :      12.879 micros/op;    8.6 MB/s   
+strace: Process 23230 attached
+24616	/tmp/leveldbtest-0/dbbench
+24620	/tmp/leveldbtest-0
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 89.66    0.480000        2043       235        93 futex
+  4.06    0.021752         837        26           fdatasync
+  3.74    0.020000       20000         1           wait4
+  1.73    0.009248         343        27           unlinkat
+  0.53    0.002817         939         3           madvise
+  0.25    0.001346           0      6356           write
+  0.04    0.000195           0      1816           mprotect
+  0.00    0.000000           0        24           fcntl
+  0.00    0.000000           0         6         4 mkdirat
+  0.00    0.000000           0         6         2 renameat
+  0.00    0.000000           0        13         5 faccessat
+  0.00    0.000000           0       182       103 openat
+  0.00    0.000000           0        83           close
+  0.00    0.000000           0        30           getdents64
+  0.00    0.000000           0        58           read
+```
 3. bdb's performance falls down when the count is 10W, 20W, 30W, 40W. -15%~-20% every 10W records.
 ```
 Entries:    100000
