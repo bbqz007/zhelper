@@ -28,6 +28,21 @@ bdb has a api for multiple writing for batch with flag DB_MULTIPLE which the ori
  196340	/tmp/leveldbtest-0/dbbench_mdb-1
  fillrandbatch :      14.442 micros/op;    7.7 MB/s    
 ```
+the backend storage of the lmdb is not ok until your program noramlly exit, can you see it safely do transaction logs. it is a memory database. 
+```
+openat(AT_FDCWD, "/tmp/leveldbtest-0/dbbench_mdb-1/lock.mdb", O_RDWR|O_CREAT|O_CLOEXEC, 0664) = 3
+mmap(NULL, 8256, PROT_READ|PROT_WRITE, MAP_SHARED, 3, 0) = 0x7e51984000
+openat(AT_FDCWD, "/tmp/leveldbtest-0/dbbench_mdb-1/data.mdb", O_RDWR|O_CREAT, 0664) = 4
+pread64(4, "", 152, 0)                  = 0
+pwrite64(4, "\0\0\0\0\0\0\0\0\0\0\10\0\0\0\0\0\336\300\357\276\1\0\0\0\0\0\0\0\0\0\0\0"..., 8192, 0) = 8192
+mmap(NULL, 64000000, PROT_READ|PROT_WRITE, MAP_SHARED, 4, 0) = 0x7e4d1b1000
+fillrandbatch :       7.694 micros/op;   14.4 MB/s   
+44856	/tmp/leveldbtest-0/dbbench_mdb-1
+```
+it cannot grow itself, you should specify the capacity before env open. and all database under this env share these spaces.
+```
+mdb_env_set_mapsize
+```
 2. leveldb good performance and less memory
 ```
 fillrandbatch :      13.590 micros/op;    8.1 MB/s    
