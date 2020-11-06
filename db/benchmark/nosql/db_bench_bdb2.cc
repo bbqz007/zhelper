@@ -89,6 +89,8 @@ static bool FLAGS_new_shuff = false;
 
 static bool FLAGS_use_partition = false;
 
+static bool FLAGS_use_multiple_put = true;
+
 static int run_round = 0;
 
 __attribute_noinline__
@@ -512,18 +514,28 @@ class Benchmark {
 	system(cmd);
 
 	int env_opt = DB_REGION_INIT;
+	if (0)
+        env_opt |= DB_SYSTEM_MEM;
 
     // Create tuning options and open the database
 	rc = db_env_create(&db_, 0);
 	rc = db_->set_cachesize(db_, 0, FLAGS_cache_size, 1);
-	rc = db_->set_lk_max_locks(db_, 100000);
-	rc = db_->set_lk_max_objects(db_, 100000);
-	if (flags != SYNC)
-		env_opt |= DB_TXN_WRITE_NOSYNC;
+	if (FLAGS_transaction)
+    {
+        rc = db_->set_lk_max_locks(db_, 100000);
+        rc = db_->set_lk_max_objects(db_, 100000);
+        if (flags != SYNC && FLAGS_transaction)
+        {
+            env_opt |= DB_TXN_WRITE_NOSYNC;
+        }
+    }
+
 	rc =db_->set_flags(db_, env_opt, 1);
-	rc =db_->log_set_config(db_, DB_LOG_AUTO_REMOVE, 1);
+	if (FLAGS_transaction)
+        rc =db_->log_set_config(db_, DB_LOG_AUTO_REMOVE, 1);
 #define TXN_FLAGS	(DB_INIT_LOCK|DB_INIT_LOG|DB_INIT_TXN|DB_INIT_MPOOL|DB_CREATE|DB_THREAD)
-	rc = db_->open(db_, file_name, TXN_FLAGS, 0664);
+#define CDB_FLAGS   (DB_INIT_CDB|DB_INIT_MPOOL|DB_CREATE|DB_THREAD)
+	rc = db_->open(db_, file_name, (FLAGS_transaction) ?TXN_FLAGS : CDB_FLAGS, 0664);
 	if (rc) {
       fprintf(stderr, "open error: %s\n", db_strerror(rc));
     }
@@ -546,7 +558,7 @@ class Benchmark {
 	//rc = dbh_->set_bt_compare(dbh_, [](DB*, const DBT* L, const DBT* R){
     //                        return memcmp(L->data, R->data, 16);
      //                      });
-	rc = dbh_->open(dbh_, NULL, "data.bdb", NULL, DB_BTREE, DB_AUTO_COMMIT|DB_CREATE|DB_THREAD, 0664);
+	rc = dbh_->open(dbh_, NULL, "data.bdb", NULL, DB_BTREE, ((FLAGS_transaction)?DB_AUTO_COMMIT:0)|DB_CREATE|DB_THREAD, 0664);
   }
 
   void Write(DBFlags flags, Order order, DBState state,
@@ -557,7 +569,9 @@ class Benchmark {
         message_ = "skipping (--use_existing_db is true)";
         //return;
       }
-	  if (db_) {
+      else
+      {
+          if (db_) {
 		  char cmd[200];
 		  sprintf(cmd, "rm -rf %s*", FLAGS_db);
 		  dbh_->close(dbh_, 0);
@@ -566,12 +580,13 @@ class Benchmark {
             system(cmd);
 		  db_ = NULL;
 		  dbh_ = NULL;
-	  }
-      Open(flags);
+          }
+          Open(flags);
+      }
     } else {
         if (!db_)
             Open(flags);
-	db_->txn_checkpoint(db_,0,0,DB_FORCE);
+	db_->txn_checkpoint(db_,0,0,0);
     }
 
     if (order == RANDOM)
@@ -586,7 +601,7 @@ class Benchmark {
     }
 
 	DBT mkey, mval;
-	DB_TXN *txn;
+	DB_TXN *txn = 0;
 	char key[100];
 	mkey.data = key;
 	mval.size = value_size;
@@ -621,9 +636,10 @@ class Benchmark {
             Open(flags);
         }
 
-      if (entries_per_batch == 1)
+      if (entries_per_batch == 1 && !FLAGS_use_multiple_put)
       {
-          db_->txn_begin(db_, NULL, &txn, 0);
+          if (FLAGS_transaction)
+              db_->txn_begin(db_, NULL, &txn, DB_TXN_WAIT|((flags==SYNC)?0:DB_TXN_WRITE_NOSYNC));
 
           for (int j=0; j < entries_per_batch; j++) {
               const int k = ((order == SEQUENTIAL) ? i+j : shuff[i+j])
@@ -638,7 +654,8 @@ class Benchmark {
               }
           FinishedSingleOp();
           }
-          txn->commit(txn, 0);
+          if (FLAGS_transaction)
+              txn->commit(txn, 0);
       }
       else
       {
@@ -663,13 +680,15 @@ class Benchmark {
               bytes_ += sz + value_size;
               FinishedSingleOp();
           }
-          db_->txn_begin(db_, NULL, &txn, 0);
+          if (FLAGS_transaction)
+              db_->txn_begin(db_, NULL, &txn, DB_TXN_NOWAIT|((flags==SYNC)?0:DB_TXN_WRITE_NOSYNC));
           int rc, flag = 0;
           rc = dbh_->put(dbh_, txn, &mkey, &mval, DB_MULTIPLE);
           if (rc) {
             fprintf(stderr, "set error: %s\n", db_strerror(rc));
           }
-          txn->commit(txn, 0);
+          if (FLAGS_transaction)
+              txn->commit(txn, 0);
       }
 
     }
@@ -681,46 +700,51 @@ class Benchmark {
   }
 
   void ReadReverse() {
-    DB_TXN *txn;
+    DB_TXN *txn = 0;
 	DBC *cursor;
 	DBT key, data;
 
 	key.flags = 0; data.flags = 0;
-	db_->txn_begin(db_, NULL, &txn, 0);
+	if (FLAGS_transaction)
+        db_->txn_begin(db_, NULL, &txn, DB_READ_UNCOMMITTED);
 	dbh_->cursor(dbh_, txn, &cursor, 0);
     while (cursor->get(cursor, &key, &data, DB_PREV) == 0) {
       bytes_ += key.size + data.size;
       FinishedSingleOp();
     }
 	cursor->close(cursor);
-	txn->abort(txn);
+	if (FLAGS_transaction)
+        txn->abort(txn);
   }
 
   void ReadSequential() {
-    DB_TXN *txn;
+    DB_TXN *txn = 0;
 	DBC *cursor;
 	DBT key, data;
 
 	key.flags = 0; data.flags = 0;
-	db_->txn_begin(db_, NULL, &txn, 0);
+	if (FLAGS_transaction)
+        db_->txn_begin(db_, NULL, &txn, DB_READ_UNCOMMITTED);
 	dbh_->cursor(dbh_, txn, &cursor, 0);
     while (cursor->get(cursor, &key, &data, DB_NEXT) == 0) {
       bytes_ += key.size + data.size;
       FinishedSingleOp();
     }
 	cursor->close(cursor);
-	txn->abort(txn);
+	if (FLAGS_transaction)
+        txn->abort(txn);
   }
 
   void ReadRandom() {
-    DB_TXN *txn;
+    DB_TXN *txn = 0;
 	DBC *cursor;
 	DBT key, data;
     char ckey[100];
 
 	key.flags = 0; data.flags = 0;
 	key.data = ckey;
-	db_->txn_begin(db_, NULL, &txn, 0);
+	if (FLAGS_transaction)
+        db_->txn_begin(db_, NULL, &txn, DB_READ_UNCOMMITTED);
 	dbh_->cursor(dbh_, txn, &cursor, 0);
     for (int i = 0; i < reads_; i++) {
       const int k = rand_.Next() % reads_;
@@ -729,7 +753,8 @@ class Benchmark {
       FinishedSingleOp();
     }
 	cursor->close(cursor);
-	txn->abort(txn);
+	if (FLAGS_transaction)
+        txn->abort(txn);
   }
 };
 
@@ -760,6 +785,12 @@ int main(int argc, char** argv) {
     } else if (sscanf(argv[i], "--use_partition=%d%c", &n, &junk) == 1 &&
                (n == 0 || n == 1)) {
       FLAGS_use_partition = n;
+    } else if (sscanf(argv[i], "--use_transaction=%d%c", &n, &junk) == 1 &&
+               (n == 0 || n == 1)) {
+      FLAGS_transaction = n;
+    } else if (sscanf(argv[i], "--use_multiple_put=%d%c", &n, &junk) == 1 &&
+               (n == 0 || n == 1)) {
+      FLAGS_use_multiple_put = n;
     } else if (sscanf(argv[i], "--num=%d%c", &n, &junk) == 1) {
       FLAGS_num = n;
     } else if (sscanf(argv[i], "--reads=%d%c", &n, &junk) == 1) {
