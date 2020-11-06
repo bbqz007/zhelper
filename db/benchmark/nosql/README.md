@@ -126,3 +126,239 @@ readrandom   :      40.542 micros/op;
 4. bdb is good at Synchronous Writes on SSD and HDD, even in large values case.
 
 5. when sqlite3 and bdb do transactions, they like to io the log on backend storage, and bdb like more. 
+sqlite3 20w rand batch
+```
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 58.04    0.014356        4785         3           unlinkat
+ 32.90    0.008138           0    238164           pwrite64
+  6.78    0.001678           6       296           brk
+  2.09    0.000517           0     26893           pread64
+  0.18    0.000044           2        24           ftruncate
+  0.00    0.000000           0        20           fcntl
+  0.00    0.000000           0         4         4 mkdirat
+  0.00    0.000000           0         1         1 faccessat
+  0.00    0.000000           0         2           fchown
+  0.00    0.000000           0        80        63 openat
+  0.00    0.000000           0        17           close
+  0.00    0.000000           0         2           getdents64
+  0.00    0.000000           0        13           read
+  0.00    0.000000           0        50           write
+  0.00    0.000000           0        27        20 newfstatat
+  0.00    0.000000           0        45           fstat
+  0.00    0.000000           0         7           fdatasync
+  0.00    0.000000           0         1           set_tid_address
+  0.00    0.000000           0         2           futex
+  0.00    0.000000           0         1           set_robust_list
+  0.00    0.000000           0        10           rt_sigaction
+  0.00    0.000000           0         5           rt_sigprocmask
+  0.00    0.000000           0         2           getrlimit
+  0.00    0.000000           0         6           geteuid
+  0.00    0.000000           0         6           munmap
+  0.00    0.000000           0         2           clone
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0        36           mmap
+  0.00    0.000000           0        18           mprotect
+  0.00    0.000000           0         2           wait4
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.024733                265740        88 total
+```
+sqlite3 20w seq batch    
+```
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 92.40    0.010000        3333         3           unlinkat
+  6.17    0.000668           0     26324           pwrite64
+  1.42    0.000154           0      7692           pread64
+  0.00    0.000000           0        20           fcntl
+  0.00    0.000000           0         4         4 mkdirat
+  0.00    0.000000           0         3           ftruncate
+  0.00    0.000000           0         1         1 faccessat
+  0.00    0.000000           0         2           fchown
+  0.00    0.000000           0        80        63 openat
+  0.00    0.000000           0        17           close
+  0.00    0.000000           0         2           getdents64
+  0.00    0.000000           0        13           read
+  0.00    0.000000           0        50           write
+  0.00    0.000000           0        27        20 newfstatat
+  0.00    0.000000           0        24           fstat
+  0.00    0.000000           0         7           fdatasync
+  0.00    0.000000           0         1           set_tid_address
+  0.00    0.000000           0         2           futex
+  0.00    0.000000           0         1           set_robust_list
+  0.00    0.000000           0        10           rt_sigaction
+  0.00    0.000000           0         5           rt_sigprocmask
+  0.00    0.000000           0         2           getrlimit
+  0.00    0.000000           0         6           geteuid
+  0.00    0.000000           0       282           brk
+  0.00    0.000000           0         6           munmap
+  0.00    0.000000           0         2           clone
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0        36           mmap
+  0.00    0.000000           0        18           mprotect
+  0.00    0.000000           0         2           wait4
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.010822                 34643        88 total
+```
+bdb 20w rand batch
+```
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 70.60    0.082816         116       713           fdatasync
+ 20.87    0.024478        3497         7         1 unlinkat
+  5.80    0.006806           0    167481           pwrite64
+  2.74    0.003211           0    165559           pread64
+  0.00    0.000000           0         6           getcwd
+  0.00    0.000000           0        50           fcntl
+  0.00    0.000000           0         5         5 mkdirat
+  0.00    0.000000           0         1         1 faccessat
+  0.00    0.000000           0        99        60 openat
+  0.00    0.000000           0        39           close
+  0.00    0.000000           0         2           getdents64
+  0.00    0.000000           0         8           lseek
+  0.00    0.000000           0        28           read
+  0.00    0.000000           0        57           write
+  0.00    0.000000           0        36        19 newfstatat
+  0.00    0.000000           0        24           fstat
+  0.00    0.000000           0         1           set_tid_address
+  0.00    0.000000           0         2           futex
+  0.00    0.000000           0         1           set_robust_list
+  0.00    0.000000           0        14           rt_sigaction
+  0.00    0.000000           0         7           rt_sigprocmask
+  0.00    0.000000           0         2           getrlimit
+  0.00    0.000000           0         5           geteuid
+  0.00    0.000000           0        12           brk
+  0.00    0.000000           0        13           munmap
+  0.00    0.000000           0         3           clone
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0        37           mmap
+  0.00    0.000000           0        14           mprotect
+  0.00    0.000000           0         3           wait4
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.117311                334230        86 total
+```
+
+bdb 20w seq batch
+```
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 83.27    0.050000        2000        25           fdatasync
+  7.78    0.004674        1558         3           unlinkat
+  4.71    0.002827         217        13           munmap
+  2.41    0.001446          54        27           read
+  0.92    0.000555           0      9332           pwrite64
+  0.91    0.000547           2       286           write
+  0.00    0.000000           0         8           getcwd
+  0.00    0.000000           0        52           fcntl
+  0.00    0.000000           0         5         5 mkdirat
+  0.00    0.000000           0         1           renameat
+  0.00    0.000000           0         1         1 faccessat
+  0.00    0.000000           0       100        59 openat
+  0.00    0.000000           0        41           close
+  0.00    0.000000           0         4           getdents64
+  0.00    0.000000           0        22           lseek
+  0.00    0.000000           0        12           pread64
+  0.00    0.000000           0        42        22 newfstatat
+  0.00    0.000000           0        22           fstat
+  0.00    0.000000           0         1           set_tid_address
+  0.00    0.000000           0         2           futex
+  0.00    0.000000           0         1           set_robust_list
+  0.00    0.000000           0        14           rt_sigaction
+  0.00    0.000000           0         7           rt_sigprocmask
+  0.00    0.000000           0         2           getrlimit
+  0.00    0.000000           0         5           geteuid
+  0.00    0.000000           0        12           brk
+  0.00    0.000000           0         3           clone
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0        37           mmap
+  0.00    0.000000           0        14           mprotect
+  0.00    0.000000           0         3           wait4
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.060049                 10098        87 total
+```
+leveldb 20w rand batch
+```
+strace: Process 23228 attached
+strace: Process 23229 attached                      
+fillrandbatch :      12.879 micros/op;    8.6 MB/s   
+strace: Process 23230 attached
+24616	/tmp/leveldbtest-0/dbbench
+24620	/tmp/leveldbtest-0
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 89.66    0.480000        2043       235        93 futex
+  4.06    0.021752         837        26           fdatasync
+  3.74    0.020000       20000         1           wait4
+  1.73    0.009248         343        27           unlinkat
+  0.53    0.002817         939         3           madvise
+  0.25    0.001346           0      6356           write
+  0.04    0.000195           0      1816           mprotect
+  0.00    0.000000           0        24           fcntl
+  0.00    0.000000           0         6         4 mkdirat
+  0.00    0.000000           0         6         2 renameat
+  0.00    0.000000           0        13         5 faccessat
+  0.00    0.000000           0       182       103 openat
+  0.00    0.000000           0        83           close
+  0.00    0.000000           0        30           getdents64
+  0.00    0.000000           0        58           read
+  0.00    0.000000           0       375       316 newfstatat
+  0.00    0.000000           0        21           fstat
+  0.00    0.000000           0         1           set_tid_address
+  0.00    0.000000           0         3           set_robust_list
+  0.00    0.000000           0        19           rt_sigaction
+  0.00    0.000000           0        12           rt_sigprocmask
+  0.00    0.000000           0         1           getpgid
+  0.00    0.000000           0         1           uname
+  0.00    0.000000           0         3           getrlimit
+  0.00    0.000000           0         1           getpid
+  0.00    0.000000           0         1           getppid
+  0.00    0.000000           0         9           getuid
+  0.00    0.000000           0        11           geteuid
+  0.00    0.000000           0         9           getgid
+  0.00    0.000000           0         9           getegid
+  0.00    0.000000           0        47           brk
+  0.00    0.000000           0        22           munmap
+  0.00    0.000000           0         3           clone
+  0.00    0.000000           0         3           execve
+  0.00    0.000000           0        64           mmap
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.535358                  9481       523 total
+```
+
+lmdb 20w rand batch
+```
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+  0.00    0.000000           0         2           fcntl
+  0.00    0.000000           0         4         4 mkdirat
+  0.00    0.000000           0         1           fstatfs
+  0.00    0.000000           0         2           ftruncate
+  0.00    0.000000           0         1         1 faccessat
+  0.00    0.000000           0        67        56 openat
+  0.00    0.000000           0        11           close
+  0.00    0.000000           0         2           getdents64
+  0.00    0.000000           0         1           lseek
+  0.00    0.000000           0        10           read
+  0.00    0.000000           0        51           write
+  0.00    0.000000           0         1           pread64
+  0.00    0.000000           0         1           pwrite64
+  0.00    0.000000           0        16        13 newfstatat
+  0.00    0.000000           0         9           fstat
+  0.00    0.000000           0         1           set_tid_address
+  0.00    0.000000           0         2           futex
+  0.00    0.000000           0         1           set_robust_list
+  0.00    0.000000           0        10           rt_sigaction
+  0.00    0.000000           0         5           rt_sigprocmask
+  0.00    0.000000           0         1           uname
+  0.00    0.000000           0         2           getrlimit
+  0.00    0.000000           0         4           geteuid
+  0.00    0.000000           0        10           brk
+  0.00    0.000000           0        10           munmap
+  0.00    0.000000           0         2           clone
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0        34           mmap
+  0.00    0.000000           0        14           mprotect
+  0.00    0.000000           0         2           wait4
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.000000                   278        74 total
+```
