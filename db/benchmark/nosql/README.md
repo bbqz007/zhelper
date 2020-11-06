@@ -126,6 +126,7 @@ readrandom   :      40.542 micros/op;
 4. bdb is good at Synchronous Writes on SSD and HDD, even in large values case.
 
 5. when sqlite3 and bdb do transactions, they like to io the log on backend storage, and bdb like more. 
+
 sqlite3 20w rand batch
 ```
 % time     seconds  usecs/call     calls    errors syscall
