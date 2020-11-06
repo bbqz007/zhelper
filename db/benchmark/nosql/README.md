@@ -9,7 +9,7 @@ http://www.lmdb.tech/bench/microbench/
 
 **db_bench_sqlite3.cc** add in memory mode, --use_in_memory=1
 
-**db_bench_bdb2.cc** add put(DB_MULTIPLE) for batch and checkpoint to remove logs, add --use_partition, add --page_size.
+**db_bench_bdb2.cc** add put(DB_MULTIPLE) for batch and checkpoint to remove logs, add --use_partition, add --page_size, add --use_transaction, add --use_multiple_put.
 
 # What do patches do
 although sqlite3 has in memory mode, but it is not a memory database. you could use lmdb for nosql memory database. sqlite3 cannot be better than leveldb even under in-memory mode in benchmark case.
@@ -17,6 +17,10 @@ although sqlite3 has in memory mode, but it is not a memory database. you could 
 bdb can run as in-memory mode, but that just aim to make it could work on some no-disk platform, not for performance.
 
 bdb has a api for multiple writing for batch with flag DB_MULTIPLE which the original benchmark code never use. i add it, but it never performances well, and so disappointing. partition does not bring a good performance.
+
+bdb has two transaction/concurrent data stroage systems. they are based on two exclusive lock subssytem, lock|txn and cdb. when you use cdb, you can not use txn.
+
+bdb's txn, will deadlock if there are more than one batch writing. because of the page lock, if two batch want to modify two same page, each holds the other page, and wait for the page the other held. if you want multiple writer transactions, don't use batch.
 
 # conclution
 1. lmdb is a memory database. you need enough memory to run it.
