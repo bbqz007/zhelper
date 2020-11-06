@@ -123,4 +123,6 @@ readrandom   :      40.542 micros/op;
 
 4. sqlite3 is good at large values, while bdb is super poor.
 
+4. bdb is good at Synchronous Writes on SSD and HDD, even in large values case.
+
 5. when sqlite3 and bdb do transactions, they like to io the log on backend storage, and bdb like more. 
