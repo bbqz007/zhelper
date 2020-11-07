@@ -89,9 +89,9 @@ static bool FLAGS_new_shuff = false;
 
 static bool FLAGS_use_partition = false;
 
-static bool FLAGS_use_multiple_put = true;
+static bool FLAGS_use_multiple_put = false;
 
-static bool FLAGS_use_in_memory = true;
+static bool FLAGS_use_in_memory = false;
 
 static bool FLAGS_use_system_mem = false;
 
