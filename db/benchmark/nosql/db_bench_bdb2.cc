@@ -91,6 +91,10 @@ static bool FLAGS_use_partition = false;
 
 static bool FLAGS_use_multiple_put = true;
 
+static bool FLAGS_use_in_memory = true;
+
+static bool FLAGS_use_system_mem = false;
+
 static int run_round = 0;
 
 __attribute_noinline__
@@ -514,8 +518,6 @@ class Benchmark {
 	system(cmd);
 
 	int env_opt = DB_REGION_INIT;
-	if (0)
-        env_opt |= DB_SYSTEM_MEM;
 
     // Create tuning options and open the database
 	rc = db_env_create(&db_, 0);
@@ -529,18 +531,26 @@ class Benchmark {
             env_opt |= DB_TXN_WRITE_NOSYNC;
         }
     }
-
+    if (FLAGS_use_in_memory)
+        db_->log_set_config(db_, DB_LOG_IN_MEMORY, 1);
 	rc =db_->set_flags(db_, env_opt, 1);
 	if (FLAGS_transaction)
         rc =db_->log_set_config(db_, DB_LOG_AUTO_REMOVE, 1);
 #define TXN_FLAGS	(DB_INIT_LOCK|DB_INIT_LOG|DB_INIT_TXN|DB_INIT_MPOOL|DB_CREATE|DB_THREAD)
 #define CDB_FLAGS   (DB_INIT_CDB|DB_INIT_MPOOL|DB_CREATE|DB_THREAD)
-	rc = db_->open(db_, file_name, (FLAGS_transaction) ?TXN_FLAGS : CDB_FLAGS, 0664);
+	if (!FLAGS_use_in_memory)
+        rc = db_->open(db_, file_name, (FLAGS_transaction) ?TXN_FLAGS : CDB_FLAGS, 0664);
+	else
+        rc = db_->open(db_, NULL, DB_PRIVATE
+                                    | ((FLAGS_transaction) ?TXN_FLAGS : CDB_FLAGS)
+                                    | ((FLAGS_use_system_mem) ?DB_SYSTEM_MEM : 0),
+                       0664);
 	if (rc) {
       fprintf(stderr, "open error: %s\n", db_strerror(rc));
     }
 	rc = db_create(&dbh_, db_, 0);
 	rc = dbh_->set_pagesize(dbh_, FLAGS_page_size);
+
 	DBT partkey[] = {
         //{(void*)"0000000000100000", 16 },
         {(void*)"0000000000200000",16 },
@@ -558,7 +568,15 @@ class Benchmark {
 	//rc = dbh_->set_bt_compare(dbh_, [](DB*, const DBT* L, const DBT* R){
     //                        return memcmp(L->data, R->data, 16);
      //                      });
-	rc = dbh_->open(dbh_, NULL, "data.bdb", NULL, DB_BTREE, ((FLAGS_transaction)?DB_AUTO_COMMIT:0)|DB_CREATE|DB_THREAD, 0664);
+	if (!FLAGS_use_in_memory)
+        rc = dbh_->open(dbh_, NULL, "data.bdb", NULL, DB_BTREE, ((FLAGS_transaction)?DB_AUTO_COMMIT:0)|DB_CREATE|DB_THREAD, 0664);
+    else
+        rc = dbh_->open(dbh_, NULL, NULL, NULL, DB_BTREE, ((FLAGS_transaction)?DB_AUTO_COMMIT:0)|DB_CREATE|DB_THREAD, 0664);
+    if (FLAGS_use_in_memory)
+    {
+        DB_MPOOLFILE* mpf = dbh_->get_mpf(dbh_);
+        rc = mpf->set_flags(mpf, DB_MPOOL_NOFILE, 1);
+    }
   }
 
   void Write(DBFlags flags, Order order, DBState state,
@@ -586,7 +604,8 @@ class Benchmark {
     } else {
         if (!db_)
             Open(flags);
-	db_->txn_checkpoint(db_,0,0,0);
+        if (FLAGS_transaction)
+            db_->txn_checkpoint(db_,0,0,0);
     }
 
     if (order == RANDOM)
@@ -627,7 +646,8 @@ class Benchmark {
     {
         if (i > 0 && 0 == (i % 100000))
         {
-            db_->txn_checkpoint(db_,0,0,DB_FORCE);
+            if (FLAGS_transaction)
+                db_->txn_checkpoint(db_,0,0,DB_FORCE);
             dbh_->close(dbh_, 0);
             db_->close(db_, 0);
             db_ = NULL;
@@ -636,7 +656,7 @@ class Benchmark {
             Open(flags);
         }
 
-      if (entries_per_batch == 1 && !FLAGS_use_multiple_put)
+      if (entries_per_batch == 1 || !FLAGS_use_multiple_put)
       {
           if (FLAGS_transaction)
               db_->txn_begin(db_, NULL, &txn, DB_TXN_WAIT|((flags==SYNC)?0:DB_TXN_WRITE_NOSYNC));
@@ -791,6 +811,12 @@ int main(int argc, char** argv) {
     } else if (sscanf(argv[i], "--use_multiple_put=%d%c", &n, &junk) == 1 &&
                (n == 0 || n == 1)) {
       FLAGS_use_multiple_put = n;
+    } else if (sscanf(argv[i], "--use_in_memory=%d%c", &n, &junk) == 1 &&
+               (n == 0 || n == 1)) {
+      FLAGS_use_in_memory = n;
+    } else if (sscanf(argv[i], "--use_system_mem=%d%c", &n, &junk) == 1 &&
+               (n == 0 || n == 1)) {
+      FLAGS_use_system_mem = n;
     } else if (sscanf(argv[i], "--num=%d%c", &n, &junk) == 1) {
       FLAGS_num = n;
     } else if (sscanf(argv[i], "--reads=%d%c", &n, &junk) == 1) {
