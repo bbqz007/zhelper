@@ -59,6 +59,35 @@ readrandom   :       0.373 micros/op;
 fillrandbatch :      14.729 micros/op;    7.5 MB/s    
 readrandom   :       3.898 micros/op;             
 ```
+# concurrency
+fill data to a 100w leveldb
+```bash
+[root@localhost build]# ./db_bench_mdb --benchmarks=fillrandom --num=200001
+fillrandom   :      88.642 micros/op;    1.2 MB/s   
+[root@localhost build]# ./db_bench_mdb --benchmarks=fillrandom --num=200000
+fillrandom   :      81.131 micros/op;    1.4 MB/s    
+```
+fill data to an empty leveldb
+```
+[root@localhost build]# ./db_bench_mdb --benchmarks=fillrandom --num=200001
+fillrandom   :      30.057 micros/op;    3.7 MB/s 
+[root@localhost build]# ./db_bench_mdb --benchmarks=fillrandom --num=200000
+fillrandom   :      31.137 micros/op;    3.6 MB/s  
+```
+fill data to an empty sqlite3db
+```
+[root@localhost build]# ./db_bench_sqlite3 --benchmarks=fillrandom --num=200001
+fillrandom   :      91.782 micros/op;    1.2 MB/s    
+[root@localhost build]# ./db_bench_sqlite3 --benchmarks=fillrandom --num=200000
+fillrandom   :      90.644 micros/op;    1.2 MB/s    
+```
+fill data to an empty bdb
+```
+[root@localhost build]# ./db_bench_bdb --benchmarks=fillrandom --num=200001
+fillrandom   :      82.491 micros/op;    1.3 MB/s    
+[root@localhost build]# ./db_bench_bdb --benchmarks=fillrandom --num=200000
+fillrandom   :      75.996 micros/op;    1.5 MB/s    
+```
 
 # conclution
 1. lmdb is a memory database. you need enough memory to run it.
