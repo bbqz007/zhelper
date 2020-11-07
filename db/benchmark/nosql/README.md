@@ -167,7 +167,8 @@ readrandom   :      40.542 micros/op;
 
 5. when sqlite3 and bdb do transactions, they like to io the log on backend storage, and bdb like more. 
 
-sqlite3 20w rand batch
+## 20w rand／seq batches profiles
+**sqlite3** 20w rand batch
 ```
 % time     seconds  usecs/call     calls    errors syscall
 ------ ----------- ----------- --------- --------- ----------------
@@ -204,7 +205,7 @@ sqlite3 20w rand batch
 ------ ----------- ----------- --------- --------- ----------------
 100.00    0.024733                265740        88 total
 ```
-sqlite3 20w seq batch    
+**sqlite3** 20w seq batch    
 ```
 % time     seconds  usecs/call     calls    errors syscall
 ------ ----------- ----------- --------- --------- ----------------
@@ -241,7 +242,7 @@ sqlite3 20w seq batch
 ------ ----------- ----------- --------- --------- ----------------
 100.00    0.010822                 34643        88 total
 ```
-bdb 20w rand batch
+**bdb** 20w rand batch
 ```
 % time     seconds  usecs/call     calls    errors syscall
 ------ ----------- ----------- --------- --------- ----------------
@@ -279,7 +280,7 @@ bdb 20w rand batch
 100.00    0.117311                334230        86 total
 ```
 
-bdb 20w seq batch
+**bdb** 20w seq batch
 ```
 % time     seconds  usecs/call     calls    errors syscall
 ------ ----------- ----------- --------- --------- ----------------
@@ -317,7 +318,7 @@ bdb 20w seq batch
 ------ ----------- ----------- --------- --------- ----------------
 100.00    0.060049                 10098        87 total
 ```
-leveldb 20w rand batch
+**leveldb** 20w rand batch
 ```
 strace: Process 23228 attached
 strace: Process 23229 attached                      
@@ -366,7 +367,7 @@ strace: Process 23230 attached
 100.00    0.535358                  9481       523 total
 ```
 
-lmdb 20w rand batch
+**lmdb** 20w rand batch
 ```
 % time     seconds  usecs/call     calls    errors syscall
 ------ ----------- ----------- --------- --------- ----------------
