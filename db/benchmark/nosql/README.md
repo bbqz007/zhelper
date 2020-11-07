@@ -9,7 +9,7 @@ http://www.lmdb.tech/bench/microbench/
 
 **db_bench_sqlite3.cc** add in memory mode, --use_in_memory=1
 
-**db_bench_bdb2.cc** add put(DB_MULTIPLE) for batch and checkpoint to remove logs, add --use_partition, add --page_size, add --use_transaction, add --use_multiple_put.
+**db_bench_bdb2.cc** add put(DB_MULTIPLE) for batch and checkpoint to remove logs, add --use_partition, add --page_size, add --use_transaction, add --use_multiple_put, add --use_in_memory, add --use_system_mem.
 
 # What do patches do
 although sqlite3 has in memory mode, but it is not a memory database. you could use lmdb for nosql memory database. sqlite3 cannot be better than leveldb even under in-memory mode in benchmark case.
