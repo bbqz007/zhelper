@@ -14,13 +14,51 @@ http://www.lmdb.tech/bench/microbench/
 # What do patches do
 although sqlite3 has in memory mode, but it is not a memory database. you could use lmdb for nosql memory database. sqlite3 cannot be better than leveldb even under in-memory mode in benchmark case.
 
-bdb can run as in-memory mode, but that just aim to make it could work on some no-disk platform, not for performance.
+bdb can run as in-memory mode, but you should use CDB rather than TDB. logs are still wrtiten in disk (may be current run directory) in TDB (log | txn) mode.
 
 bdb has a api for multiple writing for batch with flag DB_MULTIPLE which the original benchmark code never use. i add it, but it never performances well, and so disappointing. partition does not bring a good performance.
 
 bdb has two transaction/concurrent data stroage systems. they are based on two exclusive lock subssytem, lock|txn and cdb. when you use cdb, you can not use txn.
 
 bdb's txn, will deadlock if there are more than one batch writing. because of the page lock, if two batch want to modify two same page, each holds the other page, and wait for the page the other held. if you want multiple writer transactions, don't use batch.
+
+# in memory
+1. leveldb does not support in memory mode, the contributor says https://github.com/sigp/lighthouse/issues/1139
+
+2. lmdb is a memory db, no matter if you use backend stroage or not. you should specify enough virtual memory space before using. 
+
+3. sqilte3 support in memory mode.
+
+4. bdb support in memory mode. you should specify the whole memory space via cache size, all the pages are located at heap. and you should use CDB to avoid txn and logs and lock subsystem.
+
+```bash
+[root@localhost build]#  ./db_bench_bdb2 --benchmarks=fillrand100K,readrandom --use_transaction=0 --use_multiple_put=1 --use_in_memory=1 --cache_size=167776700 --page_size=8192 --use_system_mem=0
+BerkeleyDB:    version Berkeley DB 5.3.21: (May 11, 2012)
+fillrand100K :     172.363 micros/op;  553.4 MB/s (1000 ops)
+readrandom   :       3.190 micros/op;   
+[root@localhost build]#  ./db_bench_bdb2 --benchmarks=fillrandbatch,readrandom --use_transaction=0 --use_multiple_put=1 --use_in_memory=1 --cache_size=167776700 --page_size=8192 --use_system_mem=0
+fillrandbatch :       9.158 micros/op;   12.1 MB/s    
+readrandom   :       6.430 micros/op;                 
+```
+```bash
+[root@localhost build]# ./db_bench_sqlite3 --benchmarks=fillrand100K,readrandom --use_in_memory=1 --cache_size=167776700
+SQLite:     version 3.33.0
+fillrand100K :     319.812 micros/op;  298.2 MB/s (1000 ops)
+readrandom   :      12.667 micros/op;     
+[root@localhost build]# ./db_bench_sqlite3 --benchmarks=fillrandbatch,readrandom --use_in_memory=1 --cache_size=167776700
+SQLite:     version 3.33.0
+fillrandbatch :      37.808 micros/op;    2.9 MB/s    
+readrandom   :      27.765 micros/op;                 
+```
+```bash
+[root@localhost build]# ./db_bench_mdb --benchmarks=fillrand100K,readrandom    
+MDB:    version LMDB 0.9.22: (March 21, 2018)
+fillrand100K :     263.855 micros/op;  361.5 MB/s (1000 ops)
+readrandom   :       0.373 micros/op;     
+[root@localhost build]# ./db_bench_mdb --benchmarks=fillrandbatch,readrandom
+fillrandbatch :      14.729 micros/op;    7.5 MB/s    
+readrandom   :       3.898 micros/op;             
+```
 
 # conclution
 1. lmdb is a memory database. you need enough memory to run it.
@@ -124,6 +162,8 @@ readrandom   :      40.542 micros/op;
 4. sqlite3 is good at large values, while bdb is super poor.
 
 4. bdb is good at Synchronous Writes on SSD and HDD, even in large values case.
+
+4. bdb is also good at in memory if you use C(oncurrency)DB rather than T(ransactional)DB.
 
 5. when sqlite3 and bdb do transactions, they like to io the log on backend storage, and bdb like more. 
 
