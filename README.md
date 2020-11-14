@@ -1,6 +1,7 @@
 ## projects
 * gui/qt5/zhelper-qt5Widgets
 * gui/wxWidgets/zhelper-wxWidgets
+* media/opencv/cvtool/zhelper-cvtool
 ## util
 * memory/zbuffer.h
 ## C++Wrappers
