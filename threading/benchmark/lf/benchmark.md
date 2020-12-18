@@ -61,6 +61,29 @@ BM_ypipe_lf    2681418154 ns       948230 ns            1
 BM_ypipe_lf_s  1479695246 ns      1074076 ns           10
 
 ```
+# block twice every processing msg
+(io, rpc, redis, memcached, database, etc.)
+```
+2020-12-18T12:02:54+00:00
+Running ./build-cb/ysample
+Run on (8 X 1391 MHz CPU s)
+Load Average: 9.65, 9.68, 9.40
+---------------------------------------------------------
+Benchmark               Time             CPU   Iterations
+---------------------------------------------------------
+BM_deque0      1383219754 ns       947969 ns           10
+BM_deque       1425159854 ns       979593 ns           10
+BM_deque_lf    1850069615 ns      1078908 ns           10
+BM_deque_lf_s  1535946677 ns       971100 ns           10
+BM_deque2_lf   1843269831 ns       974161 ns           10
+BM_deque2_lf_s 1506488054 ns      1023677 ns           10
+BM_ypipe2      1369727592 ns       900431 ns           10
+BM_ypipe       1423148023 ns       921755 ns           10
+BM_ypipe_s     1395538600 ns      1063323 ns           10
+BM_ypipe_lf    1744946746 ns       957177 ns           10
+BM_ypipe_lf_s  1489239477 ns      1002100 ns           10
+
+```
 ### history benchmark
 ```
 Run on (7 X 1391 MHz CPU s)
