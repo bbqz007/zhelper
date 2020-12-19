@@ -65,9 +65,23 @@ void payload(T& j)
 #if DEBUG_CHECK_STAT
     ++payload_stat[j];
 #endif
-//    int x = 10000 % rand();
-//    for (int i = 0; i < x; ++i)
-//        (void)i;
+    (void) j;
+#if 0
+    for (int y = 0; y < 4; ++y)
+    {
+        /// mock a io, rpc, access database
+        std::this_thread::yield();
+        int x = 10000 % rand();
+        for (int i = 0; i < x; ++i)
+            (void)i;
+    }
+#elif 0
+    /// heavy payload
+    int x = 10000 % rand();
+    x *= 100;
+    for (int i = 0; i < x; ++i)
+        (void)i;
+#endif
 }
 
 void __check_payload_stat(int percnt, int cnt)
@@ -186,7 +200,8 @@ void BM_ypipe(benchmark::State& state)
                     p0.write(i, false);
                     p0.flush();
                     {
-                        // avoid from paralleling cond.notify and cond.wait
+                        /// avoid from paralleling cond.notify and cond.wait
+                        /// or queue is a monitor object.
                         lock_guard<mutex> lgd2(qlock);
                         can_read.notify_one();
                     }
@@ -216,17 +231,19 @@ void BM_ypipe(benchmark::State& state)
                                 if (p0.read(&j))
                                     break;
                                 can_read.wait(qlock);
+                                while (!p0.read(&j))
+                                {
+                                    /// !!!
+                                    /// writer flush and get interrupt before notify.
+                                    /// at the same time, all readers are doing payload, then one finish and read the queue.
+                                    /// the next reader block and wait for queue signal.
+                                    /// the interrupted writer return user space and notify.
+                                    /// the blocking reader wake up and read an empty queue here.
+                                    ++bugcnt;
+                                    can_read.wait(qlock);
+                                }
                             }
-
-                            if (!p0.read(&j))
-                            {
-                                ++bugcnt;
-                                continue;
-                            }
-                            notify = p0.check_read();
                         }
-                        if (notify)
-                            can_read.notify_one();
                         break;
                     }
                     // cout << j << "\n";
@@ -234,6 +251,7 @@ void BM_ypipe(benchmark::State& state)
                 }
                 if (bugcnt)
                 {
+                    /// how many time the writers were interrupted before notify.
                     //cerr << "bugs :" << bugcnt << endl;
                 }
         })));
@@ -266,7 +284,7 @@ void BM_ypipe_s(benchmark::State& state)
                     p0.write(i, false);
                     p0.flush();
                     {
-                        // avoid from paralleling cond.notify and cond.wait
+                        /// avoid from paralleling cond.notify and cond.wait
                         lock_guard<mutex> lgd2(qlock);
                         can_read.notify_one();
                     }
@@ -293,25 +311,19 @@ void BM_ypipe_s(benchmark::State& state)
                                 while (!qlock.try_lock());
                                 lock_guard<mutex> lgd2(qlock, std::adopt_lock);
 
-                                // read again, maybe a notify done before.
+                                /// read again, maybe a notify done before.
                                 if (p0.read(&j))
                                     break;
                                 can_read.wait(qlock);
+                                while (!p0.read(&j))
+                                    can_read.wait(qlock);
                             }
-
-                            if (!p0.read(&j))
-                                continue;
-                            notify = p0.check_read();
                         }
-                        if (notify)
-                            can_read.notify_one();
                         break;
                     }
                     // cout << j << "\n";
                     payload(j);
                 }
-
-                //p0.pop_front();
         })));
         for_each(thrds.begin(), thrds.end(), [](shared_ptr<thread>& thr){ thr->join(); });
     }
@@ -363,22 +375,17 @@ void BM_ypipe2(benchmark::State& state)
                             lock_guard<mutex> lgd(rlock);
                             if (p0.read(&j))
                                 break;
-                            // the difference with BM_ypipe
-                            // once p0 is empty, all reader awake from rlock and wait for cond
+                            /// the difference with BM_ypipe
+                            /// once p0 is empty, all reader awake from rlock and wait for cond
                             can_read.wait(rlock);
-                            if (!p0.read(&j))
-                                continue;
-                            notify = p0.check_read();
+                            while (!p0.read(&j))
+                                can_read.wait(rlock);
                         }
-                        if (notify)
-                            can_read.notify_one();
                         break;
                     }
                     // cout << j << "\n";
                     payload(j);
                 }
-
-                //p0.pop_front();
             })));
         for_each(thrds.begin(), thrds.end(), [](shared_ptr<thread>& thr){ thr->join(); });
     }
@@ -416,6 +423,7 @@ void BM_deque(benchmark::State& state)
         for (int cnt = 0; cnt < 10; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
+                int bugcnt = 0;
                 int j = 0;
                 for (int i = 0; i < 10000; ++i)
                 {
@@ -435,17 +443,22 @@ void BM_deque(benchmark::State& state)
 
                             can_read.wait(qlock);
                             if (p0.empty())
+                            {
+                                ++bugcnt;
                                 continue;
+                            }
                             j = p0.front();
                             p0.pop_front();
                             notify = !p0.empty();
                         }
-                        //if (notify)
-                        //can_read.notify_one();
                         break;
                     }
                     // cout << j << "\n";
                     payload(j);
+                }
+                if (bugcnt)
+                {
+                    cerr << "bugs :" << bugcnt << endl;
                 }
             })));
         try
@@ -497,7 +510,6 @@ void BM_deque0(benchmark::State& state)
                     while (1)
                     {
                         bool notify = false;
-
                         {
                             //lock_guard<mutex> lgd(rlock);
                             lock_guard<mutex> lgd2(qlock);
@@ -515,8 +527,6 @@ void BM_deque0(benchmark::State& state)
                             p0.pop_front();
                             notify = !p0.empty();
                         }
-                        //if (notify)
-                        //can_read.notify_one();
                         break;
                     }
                     // cout << j << "\n";
@@ -813,7 +823,6 @@ void BM_deque2_lf_s(benchmark::State& state)
                             {
                                 j = pr->front();
                                 pr->pop_front();
-                                //break;
                             }
                             else
                             {
@@ -840,7 +849,6 @@ void BM_deque2_lf_s(benchmark::State& state)
                                 {
                                     j = pc->front();
                                     pc->pop_front();
-                                    //break;
                                 }
                             }
                         }
@@ -933,10 +941,11 @@ void BM_ypipe_lf(benchmark::State& state)
                         {
                             if (!p0.read(&j))
                             {
-                                // fix-me: a writer notify and a reader wait are parallel,
+                                /// fix-me: a writer notify and a reader wait are parallel,
+                                /// yes, we use monitor object pattern here.
                                 lock_guard<mutex> lgd2(qlock);
-                                // read again, maybe a notify done before.
-                                // some difference with BM_ypipe,
+                                /// read again, maybe a notify done before.
+                                /// some difference with BM_ypipe,
                                 if (!p0.read(&j))
                                 {
                                     can_read.wait(qlock);
@@ -947,13 +956,13 @@ void BM_ypipe_lf(benchmark::State& state)
                                         // cerr << "q bug pre " << j << endl;
 
                                         /// !!!
-                                        /// This is not a bug.
+                                        /// This is not a bug?
                                         /// a writer flush, and interrupted before notify
-                                        /// a leader read, and the next leader wait.
-                                        /// the interrupted writter wake up and notify, but the message is already read.
-                                        /// the waiting leader wake up and read a empty queue.
+                                        /// a leader read, and the next leader block and wait for queue event.
+                                        /// the interrupted writer return user space and notify, but the message is already read.
+                                        /// the blocking leader wake up and read an empty queue.
 
-                                        /// before sleep, we try again.
+                                        /// before sleep, we try our effort again to avoid sleeping.
                                         if (!p0.check_read())
                                             can_read.wait(qlock);
                                     }
@@ -971,9 +980,9 @@ void BM_ypipe_lf(benchmark::State& state)
                         {
                             if (!p0.read(&j))
                             {
-                                // fix-me: a writer notify and a reader wait are parallel,
+                                /// fix-me: a writer notify and a reader wait are parallel,
                                 lock_guard<mutex> lgd2(qlock);
-                                // read again, maybe a notify done before.
+                                /// read again, maybe a notify done before.
                                 if (!p0.read(&j))
                                 {
                                     can_read.wait(qlock);
@@ -1016,9 +1025,9 @@ void BM_ypipe_lf(benchmark::State& state)
                         }
 
                         {
-                            // to-fix-me:
-                            // race condition when a leader want to peekup a follower,
-                            //                   there may already be some processor want to know if it can be a leader.
+                            /// to-fix-me:
+                            /// race condition when a leader want to peekup a follower,
+                            ///                   there may already be some processor want to know if it can be a leader.
                             lock_guard<mutex> lgd(rlock);
                             leader = false;
                             if (follower)
@@ -1107,7 +1116,6 @@ void BM_deque_lf_s(benchmark::State& state)
                             {
                                 j = p0.front();
                                 p0.pop_front();
-                                //break;
                             }
                             else
                             {
@@ -1117,9 +1125,9 @@ void BM_deque_lf_s(benchmark::State& state)
                             }
                         }
 
-                        // fix-me: try lock
-                        // race condition when a leader want to peekup a follower,
-                        //                   there may already be some processor want to know if it can be a leader.
+                        /// fix-me: try lock (spinlock) against sleeping.
+                        /// race condition when a leader want to peekup a follower,
+                        ///                   there may already be some processor want to know if it can be a leader.
                         {
                             while (!rlock.try_lock());
                             lock_guard<mutex> lgd(rlock, std::adopt_lock);
@@ -1221,16 +1229,10 @@ void BM_ypipe_lf_s(benchmark::State& state)
                                         if (p0.read(&j))
                                             break;
                                         can_read.wait(qlock);
+                                        while (!p0.read(&j))
+                                            can_read.wait(qlock);
                                     }
-
-                                    if (!p0.read(&j))
-                                    {
-                                        //++bugcnt;
-                                        continue;
-                                    }
-                                    notify = p0.check_read();
                                 }
-
                                 break;
                             }
                         }
