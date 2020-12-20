@@ -63,6 +63,10 @@ BM_ypipe_lf_s  1479695246 ns      1074076 ns           10
 ```
 # block twice every processing msg
 (io, rpc, redis, memcached, database, etc.)
+
+may be read a value from redis, send request and block to recv respone.
+
+then update a value to redis, send request and block to recv respone.
 ```
 2020-12-18T12:02:54+00:00
 Running ./build-cb/ysample
@@ -105,6 +109,97 @@ BM_ypipe       2618035154 ns      1028538 ns            1
 BM_ypipe_s     2651578693 ns      1491232 ns            1
 BM_ypipe_lf    2689262692 ns       982462 ns            1
 BM_ypipe_lf_s  2630038231 ns       958000 ns            1
+
+```
+# affine cache
+benchmark/msgsize/policy
+
+policy: 0. empty msg; 1. bad affine; 2. good affine.
+```
+2020-12-20T12:14:09+00:00
+Running ./build-cb/ysample
+Run on (8 X 1391 MHz CPU s)
+Load Average: 8.54, 8.98, 9.15
+----------------------------------------------------------------
+Benchmark                      Time             CPU   Iterations
+----------------------------------------------------------------
+BM_deque0/0/0          460263092 ns      1013831 ns           10
+BM_deque0/100/1        543731946 ns      1099162 ns           10
+BM_deque0/100/2        514671331 ns      1035000 ns           10
+BM_deque0/1024/1       631534754 ns      1123430 ns           10
+BM_deque0/1024/2       551457792 ns      1121077 ns           10
+BM_deque0/8192/1       817013069 ns      1195992 ns           10
+BM_deque0/8192/2       736480454 ns      1260684 ns           10
+BM_deque/0/0           334201577 ns      1062515 ns           10
+BM_deque/100/1         562195423 ns      1157007 ns           10
+BM_deque/100/2         482713923 ns      1154616 ns           10
+BM_deque/1024/1        716193239 ns      1076900 ns           10
+BM_deque/1024/2        544684300 ns      1106099 ns           10
+BM_deque/8192/1        961161669 ns      1027954 ns           10
+BM_deque/8192/2        788024769 ns      1060085 ns           10
+BM_deque_lf/0/0       2507887231 ns       960845 ns            1
+BM_deque_lf/100/1     2944434462 ns      1063692 ns            1
+BM_deque_lf/100/2     2989829384 ns      1199767 ns            1
+BM_deque_lf/1024/1    3307002923 ns      1087385 ns            1
+BM_deque_lf/1024/2    3239655154 ns       813922 ns            1
+BM_deque_lf/8192/1    3108513308 ns      1108384 ns            1
+BM_deque_lf/8192/2    3020595154 ns       969770 ns            1
+BM_deque_lf_s/0/0      783674200 ns      1051508 ns           10
+BM_deque_lf_s/100/1   1174130669 ns      1171662 ns           10
+BM_deque_lf_s/100/2   1202411954 ns      1122808 ns           10
+BM_deque_lf_s/1024/1  2181430592 ns      1060785 ns           10
+BM_deque_lf_s/1024/2  2127477046 ns       981362 ns           10
+BM_deque_lf_s/8192/1  2361141777 ns      1098039 ns           10
+BM_deque_lf_s/8192/2  2161509254 ns      1164377 ns           10
+BM_deque2_lf/0/0       885732854 ns      1077576 ns           10
+BM_deque2_lf/100/1    2670369308 ns      1149694 ns            1
+BM_deque2_lf/100/2    2586101077 ns      1373619 ns            1
+BM_deque2_lf/1024/1   3151291539 ns      1225077 ns            1
+BM_deque2_lf/1024/2   3102237000 ns      1077999 ns            1
+BM_deque2_lf/8192/1   2953772846 ns      1183923 ns            1
+BM_deque2_lf/8192/2   2872048077 ns       947077 ns            1
+BM_deque2_lf_s/0/0     341067438 ns       934246 ns           10
+BM_deque2_lf_s/100/1   979686377 ns      1027869 ns           10
+BM_deque2_lf_s/100/2   752468608 ns      1064408 ns           10
+BM_deque2_lf_s/1024/1 2036569862 ns      1143915 ns           10
+BM_deque2_lf_s/1024/2 1977876285 ns      1075823 ns           10
+BM_deque2_lf_s/8192/1 1680677554 ns      1058454 ns           10
+BM_deque2_lf_s/8192/2 1650201400 ns      1081616 ns           10
+BM_ypipe2/0/0          823684938 ns       938331 ns           10
+BM_ypipe2/100/1       1322318992 ns       959131 ns           10
+BM_ypipe2/100/2        227087970 ns      1115919 ns          100
+BM_ypipe2/1024/1      1052851754 ns      1003554 ns           10
+BM_ypipe2/1024/2       275377608 ns      1095885 ns           10
+BM_ypipe2/8192/1       797503539 ns      1063700 ns           10
+BM_ypipe2/8192/2       701391438 ns      1188377 ns           10
+BM_ypipe/0/0           233252908 ns      1038547 ns          100
+BM_ypipe/100/1         475601577 ns       956846 ns           10
+BM_ypipe/100/2         243740583 ns      1032005 ns          100
+BM_ypipe/1024/1        535145277 ns       990554 ns           10
+BM_ypipe/1024/2        280795831 ns      1376777 ns           10
+BM_ypipe/8192/1        812910654 ns      1063146 ns           10
+BM_ypipe/8192/2        714253808 ns      1242808 ns           10
+BM_ypipe_s/0/0         230490296 ns      1045536 ns          100
+BM_ypipe_s/100/1       474671331 ns      1035431 ns           10
+BM_ypipe_s/100/2       245182119 ns      1076981 ns          100
+BM_ypipe_s/1024/1      544223992 ns       944054 ns           10
+BM_ypipe_s/1024/2      279394431 ns      1254407 ns           10
+BM_ypipe_s/8192/1      813842808 ns      1077577 ns           10
+BM_ypipe_s/8192/2      718482862 ns      1150715 ns           10
+BM_ypipe_lf/0/0        907345608 ns      1048908 ns           10
+BM_ypipe_lf/100/1     2612345000 ns      1325615 ns            1
+BM_ypipe_lf/100/2     1979895769 ns      1202731 ns           10
+BM_ypipe_lf/1024/1    3219559077 ns      1519155 ns            1
+BM_ypipe_lf/1024/2    3178703462 ns      1148153 ns            1
+BM_ypipe_lf/8192/1    2940031923 ns      1170079 ns            1
+BM_ypipe_lf/8192/2    2835176923 ns      1211845 ns            1
+BM_ypipe_lf_s/0/0      425571854 ns      1159861 ns           10
+BM_ypipe_lf_s/100/1   1079632569 ns      1065131 ns           10
+BM_ypipe_lf_s/100/2    893351846 ns      1031000 ns           10
+BM_ypipe_lf_s/1024/1  2131990369 ns      1092816 ns           10
+BM_ypipe_lf_s/1024/2  2066249869 ns      1024577 ns           10
+BM_ypipe_lf_s/8192/1  1628899108 ns      1205131 ns           10
+BM_ypipe_lf_s/8192/2  1589511985 ns      1121154 ns           10
 
 ```
 ### history benchmark
