@@ -93,7 +93,7 @@ BM_ypipe_lf_s/1024/2   435990434 ns      3120020 ns           10
 BM_ypipe_lf_s/8192/1  1037672507 ns      1560010 ns           10
 BM_ypipe_lf_s/8192/2  1045463438 ns        0.000 ns           10
 ```
-···
+```
 2020-12-21T21:07:04-00:00
 Running ysample.exe
 Run on (4 X 2394 MHz CPU s)
@@ -297,4 +297,4 @@ BM_ypipe_lf_s/16384/1  2465283998 ns      3120020 ns           10
 BM_ypipe_lf_s/16384/2  3161683959 ns     15600100 ns            1
 BM_ypipe_lf_s/16384/3  2276192545 ns        0.000 ns           10
 BM_ypipe_lf_s/16384/4  2793873526 ns        0.000 ns            1
-···
+```
