@@ -501,3 +501,75 @@ BM_ypipe_lf_s/16384/2  1972617186 ns        0.000 ns           10
 BM_ypipe_lf_s/16384/3  1955612406 ns        0.000 ns           10
 BM_ypipe_lf_s/16384/4  1956840421 ns        0.000 ns           10
 ```
+# block quad times (4 threads version)
+```
+2020-12-21T23:03:28-00:00
+Running ysample.exe
+Run on (4 X 2394 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x2)
+  L1 Instruction 32 KiB (x2)
+  L2 Unified 256 KiB (x2)
+  L3 Unified 3072 KiB (x1)
+-------------------------------------------------------------
+Benchmark                   Time             CPU   Iterations
+-------------------------------------------------------------
+BM_deque0/0/0      1827383070 ns        0.000 ns           10
+BM_deque/0/0       1806371050 ns        0.000 ns           10
+BM_deque_lf/0/0    1813095663 ns      1560010 ns           10
+BM_deque_lf_s/0/0  1863728769 ns        0.000 ns           10
+BM_deque2_lf/0/0   1813235403 ns      3120020 ns           10
+BM_deque2_lf_s/0/0 1811919190 ns      1560010 ns           10
+BM_ypipe2/0/0      1816969578 ns        0.000 ns           10
+BM_ypipe/0/0       1820658457 ns      1560010 ns           10
+BM_ypipe_s/0/0     1828531613 ns        0.000 ns           10
+BM_ypipe_lf/0/0    1806074248 ns        0.000 ns           10
+BM_ypipe_lf_s/0/0  1823153582 ns        0.000 ns           10
+```
+# block quad times.
+```
+2020-12-21T23:09:01-00:00
+Running ysample.exe
+Run on (4 X 2394 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x2)
+  L1 Instruction 32 KiB (x2)
+  L2 Unified 256 KiB (x2)
+  L3 Unified 3072 KiB (x1)
+-------------------------------------------------------------
+Benchmark                   Time             CPU   Iterations
+-------------------------------------------------------------
+BM_deque0/0/0      1862343477 ns      1560010 ns           10
+BM_deque/0/0       1848038662 ns      1560010 ns           10
+BM_deque_lf/0/0    1810511912 ns      3120020 ns           10
+BM_deque_lf_s/0/0  1904029395 ns      6240040 ns           10
+BM_deque2_lf/0/0   1820376198 ns      1560010 ns           10
+BM_deque2_lf_s/0/0 1855551668 ns      4680030 ns           10
+BM_ypipe2/0/0      1826288250 ns        0.000 ns           10
+BM_ypipe/0/0       1854204487 ns      3120020 ns           10
+BM_ypipe_s/0/0     1824756675 ns      1560010 ns           10
+BM_ypipe_lf/0/0    1796128480 ns      4680030 ns           10
+BM_ypipe_lf_s/0/0  1843398381 ns      1560010 ns           10
+```
+# block quad times and test affine.
+```
+2020-12-21T23:14:55-00:00
+Running ysample.exe
+Run on (4 X 2394 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x2)
+  L1 Instruction 32 KiB (x2)
+  L2 Unified 256 KiB (x2)
+  L3 Unified 3072 KiB (x1)
+--------------------------------------------------------------
+Benchmark                    Time             CPU   Iterations
+--------------------------------------------------------------
+BM_deque_lf/1024/4    1877473642 ns      1560010 ns           10
+BM_deque2_lf/1024/4   1861744911 ns      6240040 ns           10
+BM_ypipe_lf/1024/4    1859985953 ns      1560010 ns           10
+BM_deque_lf_s/1024/4  1946218881 ns      1560010 ns           10
+BM_deque2_lf_s/1024/4 1892955787 ns      4680030 ns           10
+BM_ypipe_lf_s/1024/4  1878758588 ns        0.000 ns           10
+BM_deque/1024/1       1903486092 ns      1560010 ns           10
+BM_ypipe/1024/1       1896910543 ns        0.000 ns           10
+```
