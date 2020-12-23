@@ -402,6 +402,218 @@ BM_ypipe_lf_s/16384/2  2024924531 ns      1196469 ns           10
 BM_ypipe_lf_s/16384/3  1939442677 ns      1281739 ns           10
 BM_ypipe_lf_s/16384/4  1909186192 ns      1095384 ns           10
 ```
+### test number of threads (block quad times per msg)
+**1xW,8xR**
+```
+2020-12-23T19:57:30+00:00
+Running ./build-cb/ysample
+Run on (8 X 1391 MHz CPU s)
+Load Average: 7.83, 7.91, 8.60
+-------------------------------------------------------------
+Benchmark                   Time             CPU   Iterations
+-------------------------------------------------------------
+BM_deque0/0/0      2443662346 ns       567270 ns           10
+BM_deque/0/0       2521185770 ns       513385 ns            1
+BM_deque_lf/0/0    2567004308 ns       638077 ns            1
+BM_deque_lf_s/0/0  2593943770 ns       417154 ns            1
+BM_deque2_lf/0/0   2564970693 ns       566846 ns            1
+BM_deque2_lf_s/0/0 2596765077 ns       666000 ns            1
+BM_ypipe2/0/0      2513366769 ns       688461 ns            1
+BM_ypipe/0/0       2558681692 ns       396461 ns            1
+BM_ypipe_s/0/0     2512740924 ns       534153 ns            1
+BM_ypipe_lf/0/0    2616510924 ns       529076 ns            1
+BM_ypipe_lf_s/0/0  2532512154 ns       416308 ns            1
+```
+**2xW,8xR**
+```
+2020-12-23T20:03:03+00:00
+Running ./build-cb/ysample
+Run on (8 X 1391 MHz CPU s)
+Load Average: 8.61, 8.71, 8.82
+-------------------------------------------------------------
+Benchmark                   Time             CPU   Iterations
+-------------------------------------------------------------
+BM_deque0/0/0      2528451616 ns       618462 ns            1
+BM_deque/0/0       2645521000 ns       417462 ns            1
+BM_deque_lf/0/0    2540956815 ns       507269 ns           10
+BM_deque_lf_s/0/0  2605390923 ns       608847 ns            1
+BM_deque2_lf/0/0   2604928846 ns       490078 ns            1
+BM_deque2_lf_s/0/0 2546463770 ns       469463 ns            1
+BM_ypipe2/0/0      2675282616 ns       405538 ns            1
+BM_ypipe/0/0       2599118308 ns       484307 ns            1
+BM_ypipe_s/0/0     2680247230 ns       538462 ns            1
+BM_ypipe_lf/0/0    2586823539 ns       417001 ns            1
+BM_ypipe_lf_s/0/0  2666391231 ns       564615 ns            1
+```
+**4xW,8xR**
+```
+2020-12-23T20:06:03+00:00
+Running ./build-cb/ysample
+Run on (8 X 1391 MHz CPU s)
+Load Average: 8.08, 9.01, 8.98
+-------------------------------------------------------------
+Benchmark                   Time             CPU   Iterations
+-------------------------------------------------------------
+BM_deque0/0/0      2517989077 ns       701000 ns            1
+BM_deque/0/0       2610338377 ns       672407 ns           10
+BM_deque_lf/0/0    2628243847 ns       459770 ns            1
+BM_deque_lf_s/0/0  2568907924 ns       434155 ns            1
+BM_deque2_lf/0/0   2634187231 ns       502923 ns            1
+BM_deque2_lf_s/0/0 2617851770 ns       641078 ns            1
+BM_ypipe2/0/0      2689538000 ns       538154 ns            1
+BM_ypipe/0/0       2762379231 ns       623076 ns            1
+BM_ypipe_s/0/0     2746597001 ns       679538 ns            1
+BM_ypipe_lf/0/0    2596227154 ns       613153 ns            1
+BM_ypipe_lf_s/0/0  2621596616 ns       591077 ns            1
+```
+**8xW,8xR**
+```
+2020-12-23T20:08:33+00:00
+Running ./build-cb/ysample
+Run on (8 X 1391 MHz CPU s)
+Load Average: 9.08, 9.39, 9.15
+-------------------------------------------------------------
+Benchmark                   Time             CPU   Iterations
+-------------------------------------------------------------
+BM_deque0/0/0      2790034077 ns      1029692 ns            1
+BM_deque/0/0       2584399539 ns       744385 ns            1
+BM_deque_lf/0/0    2643878308 ns       665462 ns            1
+BM_deque_lf_s/0/0  2727489847 ns       872307 ns            1
+BM_deque2_lf/0/0   2647911077 ns       767693 ns            1
+BM_deque2_lf_s/0/0 2666571615 ns       865768 ns            1
+BM_ypipe2/0/0      2816999000 ns       823770 ns            1
+BM_ypipe/0/0       2721120077 ns       713232 ns            1
+BM_ypipe_s/0/0     2736570231 ns       859228 ns            1
+BM_ypipe_lf/0/0    2753085693 ns       774922 ns            1
+BM_ypipe_lf_s/0/0  2820924846 ns       981078 ns            1
+```
+**10xW,10xR**
+```
+2020-12-23T20:09:55+00:00
+Running ./build-cb/ysample
+Run on (8 X 1391 MHz CPU s)
+Load Average: 9.21, 9.52, 9.23
+-------------------------------------------------------------
+Benchmark                   Time             CPU   Iterations
+-------------------------------------------------------------
+BM_deque0/0/0      2519517231 ns      1201537 ns            1
+BM_deque/0/0       2577859308 ns       977075 ns            1
+BM_deque_lf/0/0    2628560154 ns       901000 ns            1
+BM_deque_lf_s/0/0  2627200154 ns      1313001 ns            1
+BM_deque2_lf/0/0   2682915308 ns      1196537 ns            1
+BM_deque2_lf_s/0/0 2649224693 ns      1409690 ns            1
+BM_ypipe2/0/0      2610372077 ns       927461 ns            1
+BM_ypipe/0/0       2617056692 ns       941614 ns            1
+BM_ypipe_s/0/0     2571722539 ns       971693 ns            1
+BM_ypipe_lf/0/0    2703044385 ns       895539 ns            1
+BM_ypipe_lf_s/0/0  2656581770 ns       974538 ns            1
+```
+### test number of threads (empty workload)
+**1xW,8xR**
+```
+2020-12-23T20:20:11+00:00
+Running ./build-cb/ysample
+Run on (8 X 1391 MHz CPU s)
+Load Average: 7.66, 7.92, 8.54
+-------------------------------------------------------------
+Benchmark                   Time             CPU   Iterations
+-------------------------------------------------------------
+BM_deque0/0/0      1164734615 ns       507308 ns           10
+BM_deque/0/0        314584700 ns       496931 ns           10
+BM_deque_lf/0/0    1650238000 ns       509192 ns           10
+BM_deque_lf_s/0/0   545349731 ns       501462 ns           10
+BM_deque2_lf/0/0   1356836031 ns       416815 ns           10
+BM_deque2_lf_s/0/0  427476169 ns       440531 ns           10
+BM_ypipe2/0/0       168266741 ns       457535 ns          100
+BM_ypipe/0/0        194036524 ns       468048 ns          100
+BM_ypipe_s/0/0      194283461 ns       472781 ns          100
+BM_ypipe_lf/0/0    1328435600 ns       454915 ns           10
+BM_ypipe_lf_s/0/0   420700954 ns       459669 ns           10
+```
+**2xW,8xR**
+```
+2020-12-23T20:23:06+00:00
+Running ./build-cb/ysample
+Run on (8 X 1391 MHz CPU s)
+Load Average: 9.98, 9.22, 8.96
+-------------------------------------------------------------
+Benchmark                   Time             CPU   Iterations
+-------------------------------------------------------------
+BM_deque0/0/0       952018954 ns       585839 ns           10
+BM_deque/0/0        327449200 ns       562007 ns           10
+BM_deque_lf/0/0    1722330823 ns       450331 ns           10
+BM_deque_lf_s/0/0   614179885 ns       529092 ns           10
+BM_deque2_lf/0/0   1321122439 ns       516662 ns           10
+BM_deque2_lf_s/0/0  441947231 ns       479654 ns           10
+BM_ypipe2/0/0       186046535 ns       492614 ns          100
+BM_ypipe/0/0        188302527 ns       521940 ns          100
+BM_ypipe_s/0/0      189442076 ns       518762 ns          100
+BM_ypipe_lf/0/0    1335682754 ns       439200 ns           10
+BM_ypipe_lf_s/0/0   446563654 ns       552038 ns           10
+```
+**4xW,8xR**
+```
+2020-12-23T20:28:08+00:00
+Running ./build-cb/ysample
+Run on (8 X 1391 MHz CPU s)
+Load Average: 8.64, 9.78, 9.39
+-------------------------------------------------------------
+Benchmark                   Time             CPU   Iterations
+-------------------------------------------------------------
+BM_deque0/0/0       706922308 ns       670539 ns           10
+BM_deque/0/0        302136100 ns       725054 ns           10
+BM_deque_lf/0/0    1731847623 ns       530377 ns           10
+BM_deque_lf_s/0/0   619127008 ns       611100 ns           10
+BM_deque2_lf/0/0   1342112569 ns       614031 ns           10
+BM_deque2_lf_s/0/0  520606054 ns       603700 ns           10
+BM_ypipe2/0/0       190421710 ns       635038 ns          100
+BM_ypipe/0/0        163725454 ns       643448 ns          100
+BM_ypipe_s/0/0      164902999 ns       606953 ns          100
+BM_ypipe_lf/0/0    1534942608 ns       709323 ns           10
+BM_ypipe_lf_s/0/0   535091177 ns       568662 ns           10
+```
+**8xW,8xR**
+```
+2020-12-23T20:30:54+00:00
+Running ./build-cb/ysample
+Run on (8 X 1391 MHz CPU s)
+Load Average: 11.02, 10.81, 9.87
+-------------------------------------------------------------
+Benchmark                   Time             CPU   Iterations
+-------------------------------------------------------------
+BM_deque0/0/0       480680485 ns       875138 ns           10
+BM_deque/0/0        300769485 ns       790677 ns           10
+BM_deque_lf/0/0    1962124492 ns       799823 ns           10
+BM_deque_lf_s/0/0   738812546 ns       832015 ns           10
+BM_deque2_lf/0/0   1321433323 ns       969931 ns           10
+BM_deque2_lf_s/0/0  550027685 ns      1040046 ns           10
+BM_ypipe2/0/0       784387877 ns       961031 ns           10
+BM_ypipe/0/0        266215215 ns       917362 ns           10
+BM_ypipe_s/0/0      285872277 ns       917530 ns           10
+BM_ypipe_lf/0/0    1081416723 ns       836492 ns           10
+BM_ypipe_lf_s/0/0   490101515 ns       836339 ns           10
+```
+**10xW,10xR**
+```
+2020-12-23T20:35:23+00:00
+Running ./build-cb/ysample
+Run on (8 X 1391 MHz CPU s)
+Load Average: 8.82, 10.35, 9.97
+-------------------------------------------------------------
+Benchmark                   Time             CPU   Iterations
+-------------------------------------------------------------
+BM_deque0/0/0       459106831 ns      1128139 ns           10
+BM_deque/0/0        346553031 ns      1110454 ns           10
+BM_deque_lf/0/0    2569195154 ns       920386 ns            1
+BM_deque_lf_s/0/0   765244992 ns       965362 ns           10
+BM_deque2_lf/0/0   1326647023 ns      1093369 ns           10
+BM_deque2_lf_s/0/0  362190623 ns      1106261 ns           10
+BM_ypipe2/0/0       984575192 ns       997569 ns           10
+BM_ypipe/0/0        229377786 ns      1062610 ns          100
+BM_ypipe_s/0/0      225112486 ns      1081724 ns          100
+BM_ypipe_lf/0/0     802978354 ns      1145592 ns           10
+BM_ypipe_lf_s/0/0   445641008 ns      1044955 ns           10
+```
 ### history benchmark
 ```
 Run on (7 X 1391 MHz CPU s)
