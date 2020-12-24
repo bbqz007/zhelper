@@ -45,8 +45,8 @@ condition variable notify perform poorly in multi parallel threads.
 test a threading model which applying to empty workloads, it has no sence. 
 
 i add two kind of workloads.
-1. computing only, and random cycles.
-2. mock real user logic (may access redis, rpc, sql database, or local critical resources) to block.
+1. `computing only`, and random cycles.
+2. `yield` (which leads switches of threads,) mock real user logic (may access redis, rpc, sql database, or local critical resources) to block.
 
 ### test platform
 1. i5 450m, year 2010 (10 yrs before today, 10 yrs after lf pattern), 2 cores(4 threads)@2.4ghz, 3MB L3 cache.
