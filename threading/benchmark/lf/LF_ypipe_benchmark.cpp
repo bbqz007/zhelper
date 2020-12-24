@@ -58,10 +58,111 @@ void BM_cvnotify0(benchmark::State& state)
 
 #define DEBUG_CHECK_STAT 0
 static unsigned char payload_stat[100000];
+/// mock affine base memory access
+static const int affine_mem_cnt = 12;
+static const int affine_L3_size = 3*(1<<20);
+static char affine_mem_r[(affine_mem_cnt+1)*affine_L3_size];
+static char affine_mem_w[(affine_mem_cnt+1)*affine_L3_size];
+static volatile int affine_mem_cur = 0;
+thread_local int tls_id;
+
+#define N_TOTAL_MSG 100000
+#define N_RTHREADS 8
+#define N_RMSG_PER_THREAD (N_TOTAL_MSG/N_RTHREADS)
+#define N_WTHREADS 8
+#define N_WMSG_PER_THREAD (N_TOTAL_MSG/N_WTHREADS)
+
+#if (N_RTHREADS*N_RMSG_PER_THREAD) != (N_WTHREADS*N_WMSG_PER_THREAD)
+#error "(N_RTHREADS*N_RMSG_PER_THREAD) != (N_WTHREADS*N_WMSG_PER_THREAD)"
+#endif
 
 template<class T>
-void payload(T& j)
+void mock_affine_write(T& j, int size, int policy)
 {
+    if (1 == policy)
+    {
+        int cur = affine_mem_cur++;
+        cur %= affine_mem_cnt;
+        char* p = affine_mem_w + cur * affine_L3_size + (rand() % affine_L3_size);
+        memset(p, cur, size);
+    }
+    else if (2 == policy)
+    {
+
+    }
+}
+
+/// affine policy
+/// 0: non
+/// 1: bad, writer thread and reader thread access different memory address
+/// 2: so so, no writer accession. reader thread write and read the same memory locations.
+/// 3: good, no writer accession. reader thread has private memory locations.
+/// 4: very good, no writer accession. reader thread only use stack.
+template<class T>
+int mock_affine_read(T& j, int size, int policy)
+{
+    int sum = 0;
+    if (1 == policy)
+    {
+        int cur = affine_mem_cur++;
+        cur %= affine_mem_cnt;
+        char* p = affine_mem_r + cur * affine_L3_size + (rand() % affine_L3_size);
+        for (int i = 0; i < size; ++i)
+        {
+            //(void) (*p == '\0');
+            /// avoid -O2 optimization
+            sum += *p;
+            ++p;
+        }
+    }
+    else if (2 == policy)
+    {
+        int cur = affine_mem_cur++;
+        cur %= affine_mem_cnt;
+        char* p = affine_mem_r + cur * affine_L3_size + (rand() % affine_L3_size);
+        memset(p, cur, size);
+
+        for (int i = 0; i < size; ++i)
+        {
+            //(void) (*p == '\0');
+            sum += *p;
+            ++p;
+        }
+    }
+    else if (3 == policy)
+    {
+        int cur = tls_id;
+        cur %= affine_mem_cnt;
+        char* p = affine_mem_r + cur * affine_L3_size + (rand() % affine_L3_size);
+        memset(p, cur, size);
+
+        for (int i = 0; i < size; ++i)
+        {
+            //(void) (*p == '\0');
+            sum += *p;
+            ++p;
+        }
+    }
+    else if (4 == policy)
+    {
+        char buf[1<<16];
+        char* p = buf;
+        memset(p, 0, size);
+
+        for (int i = 0; i < size; ++i)
+        {
+            //(void) (*p == '\0');
+            sum += *p;
+            ++p;
+        }
+    }
+    return sum;
+}
+
+template<class T>
+int payload(T& j, int size = 0, int policy = 0)
+{
+    mock_affine_read(j, size, policy);
 #if DEBUG_CHECK_STAT
     ++payload_stat[j];
 #endif
@@ -70,6 +171,7 @@ void payload(T& j)
     for (int y = 0; y < 4; ++y)
     {
         /// mock a io, rpc, access database
+        //std::this_thread::sleep_for(std::chrono::milliseconds(1));
         std::this_thread::yield();
         int x = 10000 % rand();
         for (int i = 0; i < x; ++i)
@@ -77,11 +179,19 @@ void payload(T& j)
     }
 #elif 0
     /// heavy payload
-    int x = 10000 % rand();
-    x *= 100;
-    for (int i = 0; i < x; ++i)
-        (void)i;
+    {
+        int x = 10000 % rand();
+        x *= 1;
+        register int y = 0;
+        for (int i = 0; i < x; ++i)
+            /// avoid -O2 optimization
+            y = i + 1 - y;
+        y = y + 1;
+        return y;
+    }
+
 #endif
+    return 0;
 }
 
 void __check_payload_stat(int percnt, int cnt)
@@ -127,6 +237,7 @@ void BM_yield(benchmark::State& state)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
                 int j = 0;
+				tls_id = cnt;
                 for (int i = 0; i < 10000; ++i)
                 {
                     this_thread::yield();
@@ -162,6 +273,7 @@ void BM_yield2(benchmark::State& state)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
                 int j = 0;
+				tls_id = cnt;
                 for (int i = 0; i < 10000; ++i)
                 {
                     //this_thread::yield();
@@ -188,14 +300,18 @@ void BM_ypipe(benchmark::State& state)
     bool all_quit = false;
     //deque_i p0;
 
+    int affine_size = state.range(0);
+    int affine_policy = state.range(1);
+
     while (state.KeepRunning())
     {
         vector<shared_ptr<thread> > thrds;
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_WTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
-                for (int i = 0; i < 10000; ++i)
+                for (int i = 0; i < N_WMSG_PER_THREAD; ++i)
                 {
+                    mock_affine_write(i, affine_size, affine_policy);
                     lock_guard<mutex> lgd(wlock);
                     p0.write(i, false);
                     p0.flush();
@@ -210,12 +326,13 @@ void BM_ypipe(benchmark::State& state)
                 //p0.push_back(i);
             })));
 
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_RTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
                 int bugcnt = 0;
                 int j = 0;
-                for (int i = 0; i < 10000; ++i)
+				tls_id = cnt;
+                for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
                     {
@@ -225,9 +342,9 @@ void BM_ypipe(benchmark::State& state)
                             if (p0.read(&j))
                                 break;
                             {
-                                // fix-me: a writer notify and a reader wait are parallel,
+                                /// fix-me: a writer notify and a reader wait are parallel,
                                 lock_guard<mutex> lgd2(qlock);
-                                // read again, maybe a notify done before.
+                                /// read again, maybe a notify done before.
                                 if (p0.read(&j))
                                     break;
                                 can_read.wait(qlock);
@@ -247,7 +364,7 @@ void BM_ypipe(benchmark::State& state)
                         break;
                     }
                     // cout << j << "\n";
-                    payload(j);
+                    payload(j, affine_size, affine_policy);
                 }
                 if (bugcnt)
                 {
@@ -272,14 +389,18 @@ void BM_ypipe_s(benchmark::State& state)
     bool all_quit = false;
     //deque_i p0;
 
+    int affine_size = state.range(0);
+    int affine_policy = state.range(1);
+
     while (state.KeepRunning())
     {
         vector<shared_ptr<thread> > thrds;
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_WTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
-                for (int i = 0; i < 10000; ++i)
+                for (int i = 0; i < N_WMSG_PER_THREAD; ++i)
                 {
+                    mock_affine_write(i, affine_size, affine_policy);
                     lock_guard<mutex> lgd(wlock);
                     p0.write(i, false);
                     p0.flush();
@@ -293,11 +414,12 @@ void BM_ypipe_s(benchmark::State& state)
                 //p0.push_back(i);
             })));
 
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_RTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
                 int j = 0;
-                for (int i = 0; i < 10000; ++i)
+				tls_id = cnt;
+                for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
                     {
@@ -307,7 +429,7 @@ void BM_ypipe_s(benchmark::State& state)
                             if (p0.read(&j))
                                 break;
                             {
-                                // fix-me: a writer notify and a reader wait are parallel,
+                                /// avoid sleeping if a writer is notifying.
                                 while (!qlock.try_lock());
                                 lock_guard<mutex> lgd2(qlock, std::adopt_lock);
 
@@ -322,7 +444,7 @@ void BM_ypipe_s(benchmark::State& state)
                         break;
                     }
                     // cout << j << "\n";
-                    payload(j);
+                    payload(j, affine_size, affine_policy);
                 }
         })));
         for_each(thrds.begin(), thrds.end(), [](shared_ptr<thread>& thr){ thr->join(); });
@@ -333,6 +455,7 @@ void BM_ypipe_s(benchmark::State& state)
 
 void BM_ypipe2(benchmark::State& state)
 {
+    /// this is a bad implement version of BM_ypipe
     using namespace zmq;
     using namespace std;
     typedef ypipe_t<int, 128> ypipe_i0;
@@ -344,28 +467,36 @@ void BM_ypipe2(benchmark::State& state)
     bool all_quit = false;
     //deque_i p0;
 
+    int affine_size = state.range(0);
+    int affine_policy = state.range(1);
+
     while (state.KeepRunning())
     {
         vector<shared_ptr<thread> > thrds;
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_WTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
-                for (int i = 0; i < 10000; ++i)
+                for (int i = 0; i < N_WMSG_PER_THREAD; ++i)
                 {
+                    mock_affine_write(i, affine_size, affine_policy);
                     lock_guard<mutex> lgd(wlock);
                     p0.write(i, false);
                     p0.flush();
+                    /// a problem would happen up here,
+                    /// can_read's notify is not under a lock which can_read wait for.
+                    /// wait after notify, and then no notify any more.
                     can_read.notify_one();
                 }
 
                 //p0.push_back(i);
             })));
 
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_RTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
                 int j = 0;
-                for (int i = 0; i < 10000; ++i)
+				tls_id = cnt;
+                for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
                     {
@@ -384,7 +515,7 @@ void BM_ypipe2(benchmark::State& state)
                         break;
                     }
                     // cout << j << "\n";
-                    payload(j);
+                    payload(j, affine_size, affine_policy);
                 }
             })));
         for_each(thrds.begin(), thrds.end(), [](shared_ptr<thread>& thr){ thr->join(); });
@@ -405,14 +536,18 @@ void BM_deque(benchmark::State& state)
     condition_variable_any can_read;
     deque_i p0;
 
+    int affine_size = state.range(0);
+    int affine_policy = state.range(1);
+
     while (state.KeepRunning())
     {
         vector<shared_ptr<thread> > thrds;
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_WTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
-                for (int i = 0; i < 10000; ++i)
+                for (int i = 0; i < N_WMSG_PER_THREAD; ++i)
                 {
+                    mock_affine_write(i, affine_size, affine_policy);
                     lock_guard<mutex> lgd(wlock);
                     lock_guard<mutex> lgd2(qlock);
                     p0.push_back(i);
@@ -420,12 +555,13 @@ void BM_deque(benchmark::State& state)
                 }
             })));
 
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_RTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
                 int bugcnt = 0;
                 int j = 0;
-                for (int i = 0; i < 10000; ++i)
+				tls_id = cnt;
+                for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
                     {
@@ -454,7 +590,7 @@ void BM_deque(benchmark::State& state)
                         break;
                     }
                     // cout << j << "\n";
-                    payload(j);
+                    payload(j, affine_size, affine_policy);
                 }
                 if (bugcnt)
                 {
@@ -485,14 +621,18 @@ void BM_deque0(benchmark::State& state)
     condition_variable_any can_read;
     deque_i p0;
 
+    int affine_size = state.range(0);
+    int affine_policy = state.range(1);
+
     while (state.KeepRunning())
     {
         vector<shared_ptr<thread> > thrds;
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_WTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
-                for (int i = 0; i < 10000; ++i)
+                for (int i = 0; i < N_WMSG_PER_THREAD; ++i)
                 {
+                    mock_affine_write(i, affine_size, affine_policy);
                     //lock_guard<mutex> lgd(wlock);
                     lock_guard<mutex> lgd2(qlock);
                     p0.push_back(i);
@@ -501,11 +641,12 @@ void BM_deque0(benchmark::State& state)
 
             })));
 
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_RTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
                 int j = 0;
-                for (int i = 0; i < 10000; ++i)
+				tls_id = cnt;
+                for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
                     {
@@ -530,7 +671,7 @@ void BM_deque0(benchmark::State& state)
                         break;
                     }
                     // cout << j << "\n";
-                    payload(j);
+                    payload(j, affine_size, affine_policy);
                 }
             })));
         try
@@ -560,14 +701,18 @@ void BM_deque_lf(benchmark::State& state)
     condition_variable_any can_lead;
     deque_i p0;
 
+    int affine_size = state.range(0);
+    int affine_policy = state.range(1);
+
     while (state.KeepRunning())
     {
         vector<shared_ptr<thread> > thrds;
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_WTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
-                for (int i = 0; i < 10000; ++i)
+                for (int i = 0; i < N_WMSG_PER_THREAD; ++i)
                 {
+                    mock_affine_write(i, affine_size, affine_policy);
                     lock_guard<mutex> lgd(wlock);
                     lock_guard<mutex> lgd2(qlock);
                     p0.push_back(i);
@@ -575,11 +720,12 @@ void BM_deque_lf(benchmark::State& state)
                 }
             })));
 
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_RTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
                 int j = 0;
-                for (int i = 0; i < 10000; ++i)
+				tls_id = cnt;
+                for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
                     {
@@ -632,7 +778,7 @@ void BM_deque_lf(benchmark::State& state)
                         break;
                     }
                     // cout << j << "\n";
-                    payload(j);
+                    payload(j, affine_size, affine_policy);
                 }
             })));
         try
@@ -664,14 +810,18 @@ void BM_deque2_lf(benchmark::State& state)
     deque_i* pr = &p1;
     deque_i* pw = &p2;
 
+    int affine_size = state.range(0);
+    int affine_policy = state.range(1);
+
     while (state.KeepRunning())
     {
         vector<shared_ptr<thread> > thrds;
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_WTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
-                for (int i = 0; i < 10000; ++i)
+                for (int i = 0; i < N_WMSG_PER_THREAD; ++i)
                 {
+                    mock_affine_write(i, affine_size, affine_policy);
                     lock_guard<mutex> lgd(wlock);
                     lock_guard<mutex> lgd2(qlock);
                     pw->push_back(i);
@@ -679,11 +829,12 @@ void BM_deque2_lf(benchmark::State& state)
                 }
             })));
 
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_RTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
                 int j = 0;
-                for (int i = 0; i < 10000; ++i)
+				tls_id = cnt;
+                for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
                     {
@@ -750,7 +901,7 @@ void BM_deque2_lf(benchmark::State& state)
                         break;
                     }
                     // cout << j << "\n";
-                    payload(j);
+                    payload(j, affine_size, affine_policy);
                 }
             })));
         try
@@ -782,14 +933,18 @@ void BM_deque2_lf_s(benchmark::State& state)
     deque_i* pr = &p1;
     deque_i* pw = &p2;
 
+    int affine_size = state.range(0);
+    int affine_policy = state.range(1);
+
     while (state.KeepRunning())
     {
         vector<shared_ptr<thread> > thrds;
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_WTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
-                for (int i = 0; i < 10000; ++i)
+                for (int i = 0; i < N_WMSG_PER_THREAD; ++i)
                 {
+                    mock_affine_write(i, affine_size, affine_policy);
                     lock_guard<mutex> lgd(wlock);
                     lock_guard<mutex> lgd2(qlock);
                     pw->push_back(i);
@@ -797,11 +952,12 @@ void BM_deque2_lf_s(benchmark::State& state)
                 }
             })));
 
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_RTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
                 int j = 0;
-                for (int i = 0; i < 10000; ++i)
+				tls_id = cnt;
+                for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
                     {
@@ -866,7 +1022,7 @@ void BM_deque2_lf_s(benchmark::State& state)
                         break;
                     }
                     // cout << j << "\n";
-                    payload(j);
+                    payload(j, affine_size, affine_policy);
                 }
             })));
         try
@@ -897,32 +1053,37 @@ void BM_ypipe_lf(benchmark::State& state)
     condition_variable_any can_lead;
     //deque_i p0;
 
+    int affine_size = state.range(0);
+    int affine_policy = state.range(1);
+
     while (state.KeepRunning())
     {
         reset_payload_stat();
         vector<shared_ptr<thread> > thrds;
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_WTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
-                  for (int i = 0; i < 10000; ++i)
-                  {
-                        lock_guard<mutex> lgd(wlock);
-                        p0.write(i, false);
-                        p0.flush();
-                        {
-                            // avoid from paralleling cond.notify and cond.wait
-                            lock_guard<mutex> lgd2(qlock);
-                            can_read.notify_one();
-                        }
-                  }
+                for (int i = 0; i < N_WMSG_PER_THREAD; ++i)
+                {
+                    mock_affine_write(i, affine_size, affine_policy);
+                    lock_guard<mutex> lgd(wlock);
+                    p0.write(i, false);
+                    p0.flush();
+                    {
+                        // avoid from paralleling cond.notify and cond.wait
+                        lock_guard<mutex> lgd2(qlock);
+                        can_read.notify_one();
+                    }
+                }
 
             })));
 
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_RTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
                 int j = 0;
-                for (int i = 0; i < 10000; ++i)
+				tls_id = cnt;
+                for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
                     {
@@ -1039,7 +1200,7 @@ void BM_ypipe_lf(benchmark::State& state)
                         break;
                     }
                     // cout << j << "\n";
-                    payload(j);
+                    payload(j, affine_size, affine_policy);
                 }
 
 
@@ -1073,26 +1234,31 @@ void BM_deque_lf_s(benchmark::State& state)
     condition_variable_any can_lead;
     deque_i p0;
 
+    int affine_size = state.range(0);
+    int affine_policy = state.range(1);
+
     while (state.KeepRunning())
     {
         vector<shared_ptr<thread> > thrds;
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_WTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
-                  for (int i = 0; i < 10000; ++i)
-                  {
-                        lock_guard<mutex> lgd(wlock);
-                        lock_guard<mutex> lgd2(qlock);
-                        p0.push_back(i);
-                        can_read.notify_one();
-                  }
+                for (int i = 0; i < N_WMSG_PER_THREAD; ++i)
+                {
+                    mock_affine_write(i, affine_size, affine_policy);
+                    lock_guard<mutex> lgd(wlock);
+                    lock_guard<mutex> lgd2(qlock);
+                    p0.push_back(i);
+                    can_read.notify_one();
+                }
             })));
 
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_RTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
                 int j = 0;
-                for (int i = 0; i < 10000; ++i)
+				tls_id = cnt;
+                for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
                     {
@@ -1141,7 +1307,7 @@ void BM_deque_lf_s(benchmark::State& state)
                         break;
                     }
                     // cout << j << "\n";
-                    payload(j);
+                    payload(j, affine_size, affine_policy);
                 }
             })));
         try
@@ -1172,30 +1338,35 @@ void BM_ypipe_lf_s(benchmark::State& state)
     condition_variable_any can_lead;
     //deque_i p0;
 
+    int affine_size = state.range(0);
+    int affine_policy = state.range(1);
+
     while (state.KeepRunning())
     {
         vector<shared_ptr<thread> > thrds;
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_WTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
-                  for (int i = 0; i < 10000; ++i)
-                  {
-                        lock_guard<mutex> lgd(wlock);
-                        p0.write(i, false);
-                        p0.flush();
-                        {
-                            // avoid from paralleling cond.notify and cond.wait
-                            lock_guard<mutex> lgd2(qlock);
-                            can_read.notify_one();
-                        }
-                  }
+                for (int i = 0; i < N_WMSG_PER_THREAD; ++i)
+                {
+                    mock_affine_write(i, affine_size, affine_policy);
+                    lock_guard<mutex> lgd(wlock);
+                    p0.write(i, false);
+                    p0.flush();
+                    {
+                        // avoid from paralleling cond.notify and cond.wait
+                        lock_guard<mutex> lgd2(qlock);
+                        can_read.notify_one();
+                    }
+                }
             })));
 
-        for (int cnt = 0; cnt < 10; ++cnt)
+        for (int cnt = 0; cnt < N_RTHREADS; ++cnt)
         thrds.push_back(shared_ptr<thread>(
             new thread([&](){
                 int j = 0;
-                for (int i = 0; i < 10000; ++i)
+				tls_id = cnt;
+                for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
                     {
@@ -1250,7 +1421,7 @@ void BM_ypipe_lf_s(benchmark::State& state)
                         break;
                     }
                     // cout << j << "\n";
-                    payload(j);
+                    payload(j, affine_size, affine_policy);
                 }
             })));
         try
@@ -1265,21 +1436,40 @@ void BM_ypipe_lf_s(benchmark::State& state)
     }
 }
 
+#define BENCHMARK_APPLY_ARGS(bm) \
+    BENCHMARK(bm)->Args({0,0}) \
+            ->Args({100,1}) \
+            ->Args({100,2}) \
+            ->Args({100,3}) \
+            ->Args({100,4}) \
+            ->Args({1024,1}) \
+            ->Args({1024,2}) \
+            ->Args({1024,3}) \
+            ->Args({1024,4}) \
+            ->Args({8192,1}) \
+            ->Args({8192,2}) \
+            ->Args({8192,3}) \
+            ->Args({8192,4}) \
+            ->Args({1<<14,1}) \
+            ->Args({1<<14,2}) \
+            ->Args({1<<14,3}) \
+            ->Args({1<<14,4}) \
+
 BENCHMARK(BM_yield0);
 BENCHMARK(BM_cvnotify0);
 BENCHMARK(BM_yield);
 BENCHMARK(BM_yield2);
-BENCHMARK(BM_deque0);
-BENCHMARK(BM_deque);
-BENCHMARK(BM_deque_lf);
-BENCHMARK(BM_deque_lf_s);
-BENCHMARK(BM_deque2_lf);
-BENCHMARK(BM_deque2_lf_s);
-BENCHMARK(BM_ypipe2);
-BENCHMARK(BM_ypipe);
-BENCHMARK(BM_ypipe_s);
-BENCHMARK(BM_ypipe_lf);
-BENCHMARK(BM_ypipe_lf_s);
+BENCHMARK_APPLY_ARGS(BM_deque0);
+BENCHMARK_APPLY_ARGS(BM_deque);
+BENCHMARK_APPLY_ARGS(BM_deque_lf);
+BENCHMARK_APPLY_ARGS(BM_deque_lf_s);
+BENCHMARK_APPLY_ARGS(BM_deque2_lf);
+BENCHMARK_APPLY_ARGS(BM_deque2_lf_s);
+//BENCHMARK_APPLY_ARGS(BM_ypipe2);
+BENCHMARK_APPLY_ARGS(BM_ypipe);
+BENCHMARK_APPLY_ARGS(BM_ypipe_s);
+BENCHMARK_APPLY_ARGS(BM_ypipe_lf);
+BENCHMARK_APPLY_ARGS(BM_ypipe_lf_s);
 
 int main(int argc, char** argv)
 {
