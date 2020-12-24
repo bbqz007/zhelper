@@ -293,6 +293,7 @@ BM_ypipe_lf_s/16384/3  1197471208 ns      1107662 ns           10
 BM_ypipe_lf_s/16384/4   940539369 ns       835623 ns           10
 ```
 ### affine and block quad times per msg.
+**8xW,8xR**
 ```
 Run on (8 X 1391 MHz CPU s)
 Load Average: 7.99, 8.37, 10.09
@@ -474,6 +475,7 @@ BM_ypipe_lf_s/16384/2  1802953354 ns       976146 ns           10
 BM_ypipe_lf_s/16384/3  1804821362 ns       952092 ns           10
 BM_ypipe_lf_s/16384/4  1766426762 ns       827700 ns           10
 ```
+**8xW,8xR**
 ```
 Run on (8 X 1391 MHz CPU s)
 Load Average: 8.75, 9.69, 11.56
@@ -654,5 +656,186 @@ BM_ypipe_lf_s/16384/1  1559835185 ns       993492 ns           10
 BM_ypipe_lf_s/16384/2  1447302177 ns      1114523 ns           10
 BM_ypipe_lf_s/16384/3  1394074700 ns      1068784 ns           10
 BM_ypipe_lf_s/16384/4  1058858169 ns       950277 ns           10
-
+```
+**2xW,2xR**
+```
+Run on (3 X 1391 MHz CPU s)
+Load Average: 9.79, 9.46, 9.28
+-----------------------------------------------------------------
+Benchmark                       Time             CPU   Iterations
+-----------------------------------------------------------------
+BM_yield0                 6239994 ns      6214844 ns          112
+BM_cvnotify0               793906 ns       790936 ns          887
+BM_yield                113161229 ns       829560 ns          100
+BM_yield2                87814216 ns       869947 ns          100
+BM_deque0/0/0           223576058 ns       182239 ns          100
+BM_deque0/100/1         270214700 ns       218939 ns           10
+BM_deque0/100/2         258553769 ns       194323 ns           10
+BM_deque0/100/3         255734677 ns       160546 ns           10
+BM_deque0/100/4         232478648 ns       174163 ns          100
+BM_deque0/1024/1        440035400 ns       235870 ns           10
+BM_deque0/1024/2        361468500 ns       195200 ns           10
+BM_deque0/1024/3        325714415 ns       210439 ns           10
+BM_deque0/1024/4        283321323 ns       196715 ns           10
+BM_deque0/8192/1       1027817269 ns       280238 ns           10
+BM_deque0/8192/2        901238631 ns       250100 ns           10
+BM_deque0/8192/3        814945639 ns       194077 ns           10
+BM_deque0/8192/4        648946546 ns       184854 ns           10
+BM_deque0/16384/1      1635071423 ns       272092 ns           10
+BM_deque0/16384/2      1697034800 ns       437508 ns           10
+BM_deque0/16384/3      1411773208 ns       228192 ns           10
+BM_deque0/16384/4      1114110292 ns       220646 ns           10
+BM_deque/0/0            246779158 ns       185925 ns          100
+BM_deque/100/1          338888515 ns       179146 ns           10
+BM_deque/100/2          262923846 ns       212054 ns           10
+BM_deque/100/3          272060808 ns       196546 ns           10
+BM_deque/100/4          251067199 ns       181707 ns          100
+BM_deque/1024/1         424672231 ns       204469 ns           10
+BM_deque/1024/2         365986908 ns       271131 ns           10
+BM_deque/1024/3         329742461 ns       240292 ns           10
+BM_deque/1024/4         296254662 ns       157746 ns           10
+BM_deque/8192/1        1004571754 ns       242538 ns           10
+BM_deque/8192/2         944689469 ns       282592 ns           10
+BM_deque/8192/3         878421915 ns       235731 ns           10
+BM_deque/8192/4         689963000 ns       179892 ns           10
+BM_deque/16384/1       1877014346 ns       332569 ns           10
+BM_deque/16384/2       1795929308 ns       277162 ns           10
+BM_deque/16384/3       1465948285 ns       240892 ns           10
+BM_deque/16384/4       1138799192 ns       206915 ns           10
+BM_deque_lf/0/0         238244920 ns       201376 ns          100
+BM_deque_lf/100/1       319501939 ns       209031 ns           10
+BM_deque_lf/100/2       261230862 ns       178723 ns           10
+BM_deque_lf/100/3       256848308 ns       187484 ns           10
+BM_deque_lf/100/4       257190262 ns       211792 ns           10
+BM_deque_lf/1024/1      439383115 ns       259923 ns           10
+BM_deque_lf/1024/2      361115731 ns       217631 ns           10
+BM_deque_lf/1024/3      340242023 ns       239816 ns           10
+BM_deque_lf/1024/4      287013285 ns       189900 ns           10
+BM_deque_lf/8192/1     1125754746 ns       346631 ns           10
+BM_deque_lf/8192/2     1025201385 ns       442454 ns           10
+BM_deque_lf/8192/3     1026367646 ns       333284 ns           10
+BM_deque_lf/8192/4      699040492 ns       167346 ns           10
+BM_deque_lf/16384/1    1998914192 ns       322992 ns           10
+BM_deque_lf/16384/2    1863607100 ns       278892 ns           10
+BM_deque_lf/16384/3    1594649131 ns       331184 ns           10
+BM_deque_lf/16384/4    1176376246 ns       244616 ns           10
+BM_deque_lf_s/0/0       251703354 ns       176669 ns           10
+BM_deque_lf_s/100/1     349264892 ns       204954 ns           10
+BM_deque_lf_s/100/2     283716069 ns       187315 ns           10
+BM_deque_lf_s/100/3     297755000 ns       191269 ns           10
+BM_deque_lf_s/100/4     260672777 ns       218239 ns           10
+BM_deque_lf_s/1024/1    492499677 ns       230500 ns           10
+BM_deque_lf_s/1024/2    397179008 ns       284446 ns           10
+BM_deque_lf_s/1024/3    384612185 ns       188377 ns           10
+BM_deque_lf_s/1024/4    313066131 ns       175577 ns           10
+BM_deque_lf_s/8192/1   1232974754 ns       297616 ns           10
+BM_deque_lf_s/8192/2   1029388485 ns       344215 ns           10
+BM_deque_lf_s/8192/3    986914562 ns       274269 ns           10
+BM_deque_lf_s/8192/4    705795623 ns       175577 ns           10
+BM_deque_lf_s/16384/1  1929887162 ns       341715 ns           10
+BM_deque_lf_s/16384/2  1781119677 ns       343054 ns           10
+BM_deque_lf_s/16384/3  1640133615 ns       345192 ns           10
+BM_deque_lf_s/16384/4  1194101000 ns       263085 ns           10
+BM_deque2_lf/0/0        222996929 ns       176919 ns          100
+BM_deque2_lf/100/1      302631523 ns       212554 ns           10
+BM_deque2_lf/100/2      255362675 ns       189995 ns          100
+BM_deque2_lf/100/3      257891862 ns       184230 ns           10
+BM_deque2_lf/100/4      231618929 ns       178875 ns          100
+BM_deque2_lf/1024/1     440274238 ns       208254 ns           10
+BM_deque2_lf/1024/2     351378623 ns       218385 ns           10
+BM_deque2_lf/1024/3     339848854 ns       223023 ns           10
+BM_deque2_lf/1024/4     286285854 ns       203385 ns           10
+BM_deque2_lf/8192/1    1111999731 ns       327592 ns           10
+BM_deque2_lf/8192/2    1004032731 ns       275739 ns           10
+BM_deque2_lf/8192/3     970986908 ns       274938 ns           10
+BM_deque2_lf/8192/4     702815831 ns       218062 ns           10
+BM_deque2_lf/16384/1   1809632808 ns       309469 ns           10
+BM_deque2_lf/16384/2   1777126677 ns       340169 ns           10
+BM_deque2_lf/16384/3   1541370492 ns       282908 ns           10
+BM_deque2_lf/16384/4   1170148308 ns       201684 ns           10
+BM_deque2_lf_s/0/0      230547881 ns       186686 ns          100
+BM_deque2_lf_s/100/1    314737923 ns       194069 ns           10
+BM_deque2_lf_s/100/2    258242185 ns       199723 ns           10
+BM_deque2_lf_s/100/3    274519308 ns       196039 ns           10
+BM_deque2_lf_s/100/4    235575498 ns       192713 ns          100
+BM_deque2_lf_s/1024/1   446473600 ns       238785 ns           10
+BM_deque2_lf_s/1024/2   445617831 ns       282185 ns           10
+BM_deque2_lf_s/1024/3   343403146 ns       210353 ns           10
+BM_deque2_lf_s/1024/4   286879946 ns       168939 ns           10
+BM_deque2_lf_s/8192/1  1150347392 ns       360654 ns           10
+BM_deque2_lf_s/8192/2   988324777 ns       229269 ns           10
+BM_deque2_lf_s/8192/3   927385031 ns       284654 ns           10
+BM_deque2_lf_s/8192/4   699256777 ns       172823 ns           10
+BM_deque2_lf_s/16384/1 1879224123 ns       305469 ns           10
+BM_deque2_lf_s/16384/2 1825821123 ns       308192 ns           10
+BM_deque2_lf_s/16384/3 1582028200 ns       374938 ns           10
+BM_deque2_lf_s/16384/4 1194978869 ns       200500 ns           10
+BM_ypipe/0/0            244927500 ns       186851 ns          100
+BM_ypipe/100/1          315469708 ns       190793 ns           10
+BM_ypipe/100/2          256224415 ns       178562 ns           10
+BM_ypipe/100/3          296316015 ns       215831 ns           10
+BM_ypipe/100/4          239570272 ns       187879 ns          100
+BM_ypipe/1024/1         457199800 ns       231000 ns           10
+BM_ypipe/1024/2         338011585 ns       245623 ns           10
+BM_ypipe/1024/3         331561746 ns       211331 ns           10
+BM_ypipe/1024/4         289720969 ns       152361 ns           10
+BM_ypipe/8192/1        1196057423 ns       322992 ns           10
+BM_ypipe/8192/2         947053754 ns       330446 ns           10
+BM_ypipe/8192/3         885458323 ns       320316 ns           10
+BM_ypipe/8192/4         684616446 ns       192962 ns           10
+BM_ypipe/16384/1       1856517885 ns       379123 ns           10
+BM_ypipe/16384/2       1777690146 ns       252723 ns           10
+BM_ypipe/16384/3       1518108692 ns       266269 ns           10
+BM_ypipe/16384/4       1189210577 ns       229577 ns           10
+BM_ypipe_s/0/0          233793270 ns       187192 ns          100
+BM_ypipe_s/100/1        341409954 ns       238977 ns           10
+BM_ypipe_s/100/2        267538892 ns       204946 ns           10
+BM_ypipe_s/100/3        259553715 ns       179292 ns           10
+BM_ypipe_s/100/4        242626771 ns       188831 ns          100
+BM_ypipe_s/1024/1       472246992 ns       264777 ns           10
+BM_ypipe_s/1024/2       336554308 ns       215169 ns           10
+BM_ypipe_s/1024/3       342722762 ns       213277 ns           10
+BM_ypipe_s/1024/4       284209239 ns       221092 ns           10
+BM_ypipe_s/8192/1      1170406939 ns       285585 ns           10
+BM_ypipe_s/8192/2      1102904415 ns       375223 ns           10
+BM_ypipe_s/8192/3       946363731 ns       367200 ns           10
+BM_ypipe_s/8192/4       716953900 ns       239684 ns           10
+BM_ypipe_s/16384/1     1543968269 ns       401962 ns           10
+BM_ypipe_s/16384/2     1584098892 ns       265016 ns           10
+BM_ypipe_s/16384/3     1396178985 ns       263685 ns           10
+BM_ypipe_s/16384/4     1175688316 ns       163246 ns           10
+BM_ypipe_lf/0/0         224454196 ns       194064 ns          100
+BM_ypipe_lf/100/1       319497031 ns       207254 ns           10
+BM_ypipe_lf/100/2       263048054 ns       200277 ns           10
+BM_ypipe_lf/100/3       252176885 ns       154715 ns           10
+BM_ypipe_lf/100/4       229739472 ns       201654 ns          100
+BM_ypipe_lf/1024/1      439799946 ns       210408 ns           10
+BM_ypipe_lf/1024/2      332215300 ns       197823 ns           10
+BM_ypipe_lf/1024/3      320039415 ns       187962 ns           10
+BM_ypipe_lf/1024/4      274434223 ns       178331 ns           10
+BM_ypipe_lf/8192/1     1000464754 ns       293893 ns           10
+BM_ypipe_lf/8192/2      895455015 ns       264869 ns           10
+BM_ypipe_lf/8192/3      855823715 ns       345077 ns           10
+BM_ypipe_lf/8192/4      700058039 ns       177369 ns           10
+BM_ypipe_lf/16384/1    1613021062 ns       277816 ns           10
+BM_ypipe_lf/16384/2    1576180631 ns       349915 ns           10
+BM_ypipe_lf/16384/3    1460879939 ns       268146 ns           10
+BM_ypipe_lf/16384/4    1165068285 ns       165616 ns           10
+BM_ypipe_lf_s/0/0       238799673 ns       170581 ns          100
+BM_ypipe_lf_s/100/1     324900715 ns       215446 ns           10
+BM_ypipe_lf_s/100/2     271622623 ns       175292 ns           10
+BM_ypipe_lf_s/100/3     255035923 ns       173469 ns           10
+BM_ypipe_lf_s/100/4     238640542 ns       183419 ns          100
+BM_ypipe_lf_s/1024/1    484511123 ns       213054 ns           10
+BM_ypipe_lf_s/1024/2    353272523 ns       221469 ns           10
+BM_ypipe_lf_s/1024/3    335782962 ns       213254 ns           10
+BM_ypipe_lf_s/1024/4    280501508 ns       169923 ns           10
+BM_ypipe_lf_s/8192/1   1023385900 ns       365423 ns           10
+BM_ypipe_lf_s/8192/2    925074039 ns       239838 ns           10
+BM_ypipe_lf_s/8192/3    869407223 ns       229385 ns           10
+BM_ypipe_lf_s/8192/4    709253192 ns       164207 ns           10
+BM_ypipe_lf_s/16384/1  1715741323 ns       289877 ns           10
+BM_ypipe_lf_s/16384/2  1722309438 ns       330585 ns           10
+BM_ypipe_lf_s/16384/3  1534608523 ns       521723 ns           10
+BM_ypipe_lf_s/16384/4  1193713692 ns       208831 ns           10
 ```
