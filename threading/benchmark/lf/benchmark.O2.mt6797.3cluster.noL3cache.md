@@ -657,7 +657,7 @@ BM_ypipe_lf_s/16384/2  1447302177 ns      1114523 ns           10
 BM_ypipe_lf_s/16384/3  1394074700 ns      1068784 ns           10
 BM_ypipe_lf_s/16384/4  1058858169 ns       950277 ns           10
 ```
-**2xW,2xR**
+**2xW,2xR,2xa72@2.3+1xa53@1.3(for hardware interrput)**
 ```
 Run on (3 X 1391 MHz CPU s)
 Load Average: 9.79, 9.46, 9.28
@@ -838,4 +838,146 @@ BM_ypipe_lf_s/16384/1  1715741323 ns       289877 ns           10
 BM_ypipe_lf_s/16384/2  1722309438 ns       330585 ns           10
 BM_ypipe_lf_s/16384/3  1534608523 ns       521723 ns           10
 BM_ypipe_lf_s/16384/4  1193713692 ns       208831 ns           10
+```
+### access redis quad times per msg
+100 times slower. amount of total messages is reduced to 1/100. 
+
+the affect of the overhead of threading model comes down.
+
+in this case, taking more threads is more important than applying to what threading model.
+**2xW,2xR**
+```
+Run on (3 X 1391 MHz CPU s)
+Load Average: 10.18, 13.05, 16.31
+----------------------------------------------------------------
+Benchmark                      Time             CPU   Iterations
+----------------------------------------------------------------
+BM_ypipe_lf/0/0       11931431232 ns       328154 ns            1
+BM_ypipe_lf/100/1     9230981847 ns       144461 ns            1
+BM_ypipe_lf/100/2     7767948001 ns       193384 ns            1
+BM_ypipe_lf/100/3     7527216077 ns       122769 ns            1
+BM_ypipe_lf/100/4     11320469231 ns       120384 ns            1
+BM_ypipe_lf/1024/1    9094339231 ns       250999 ns            1
+BM_ypipe_lf/1024/2    17340780770 ns       144461 ns            1
+BM_ypipe_lf/1024/3    11875902000 ns       171770 ns            1
+BM_ypipe_lf/1024/4    9734181923 ns       127924 ns            1
+BM_ypipe_lf/8192/1    7257554462 ns       197230 ns            1
+BM_ypipe_lf/8192/2    8784138923 ns       114691 ns            1
+BM_ypipe_lf/8192/3    7512531539 ns       123000 ns            1
+BM_ypipe_lf/8192/4    9012952078 ns       115692 ns            1
+BM_ypipe_lf/16384/1   10217849616 ns       227000 ns            1
+BM_ypipe_lf/16384/2   12511126770 ns       731000 ns            1
+BM_ypipe_lf/16384/3   9149388308 ns       111615 ns            1
+BM_ypipe_lf/16384/4   9551957462 ns       117769 ns            1
+BM_ypipe_lf_s/0/0     9085018001 ns       200463 ns            1
+BM_ypipe_lf_s/100/1   11134297539 ns       796078 ns            1
+BM_ypipe_lf_s/100/2   10532710385 ns       108923 ns            1
+BM_ypipe_lf_s/100/3   15746312001 ns       130691 ns            1
+BM_ypipe_lf_s/100/4   10474258231 ns       129615 ns            1
+BM_ypipe_lf_s/1024/1  12098786693 ns       213462 ns            1
+BM_ypipe_lf_s/1024/2  15625324770 ns       127998 ns            1
+BM_ypipe_lf_s/1024/3  9413957539 ns       115615 ns            1
+BM_ypipe_lf_s/1024/4  10630501539 ns       124232 ns            1
+BM_ypipe_lf_s/8192/1  15143394232 ns       124923 ns            1
+BM_ypipe_lf_s/8192/2  13337908154 ns       661308 ns            1
+BM_ypipe_lf_s/8192/3  9287315155 ns       134615 ns            1
+BM_ypipe_lf_s/8192/4  10738824616 ns       126538 ns            1
+BM_ypipe_lf_s/16384/1 18269860386 ns       196154 ns            1
+BM_ypipe_lf_s/16384/2 13342044386 ns       218384 ns            1
+BM_ypipe_lf_s/16384/3 10060926616 ns       736384 ns            1
+BM_ypipe_lf_s/16384/4 7574335846 ns       134231 ns            1
+
+Run on (3 X 1391 MHz CPU s)
+Load Average: 7.55, 9.23, 13.42
+-----------------------------------------------------------
+Benchmark                 Time             CPU   Iterations
+-----------------------------------------------------------
+BM_ypipe/0/0     5026263000 ns       173847 ns            1
+BM_ypipe/100/1   8777136077 ns       116616 ns            1
+BM_ypipe/100/2   8978420924 ns       120077 ns            1
+BM_ypipe/100/3   7784578693 ns       145001 ns            1
+BM_ypipe/100/4   7382878385 ns       121462 ns            1
+BM_ypipe/1024/1  7697488385 ns       131385 ns            1
+BM_ypipe/1024/2  8203490616 ns       130307 ns            1
+BM_ypipe/1024/3  9076550770 ns       129308 ns            1
+BM_ypipe/1024/4  7716133001 ns       232538 ns            1
+BM_ypipe/8192/1  7356941924 ns       771923 ns            1
+BM_ypipe/8192/2  8168360155 ns       104615 ns            1
+BM_ypipe/8192/3  8561146385 ns       102616 ns            1
+BM_ypipe/8192/4  13330339463 ns       108691 ns            1
+BM_ypipe/16384/1 9243608923 ns       144615 ns            1
+BM_ypipe/16384/2 9107775386 ns       121692 ns            1
+BM_ypipe/16384/3 7705608231 ns       125154 ns            1
+BM_ypipe/16384/4 7668513001 ns       255000 ns            1
+
+Run on (3 X 1391 MHz CPU s)
+Load Average: 7.44, 8.32, 12.23
+-----------------------------------------------------------
+Benchmark                 Time             CPU   Iterations
+-----------------------------------------------------------
+BM_deque/0/0     7755087231 ns       193847 ns            1
+BM_deque/100/1   9760274847 ns       218692 ns            1
+BM_deque/100/2   9721650078 ns       164308 ns            1
+BM_deque/100/3   9317227386 ns       116306 ns            1
+BM_deque/100/4   9411130616 ns       107461 ns            1
+BM_deque/1024/1  11374817078 ns       141153 ns            1
+BM_deque/1024/2  12714148924 ns       191385 ns            1
+BM_deque/1024/3  9852095001 ns       183999 ns            1
+BM_deque/1024/4  9834991847 ns       111155 ns            1
+BM_deque/8192/1  10043024154 ns       116538 ns            1
+BM_deque/8192/2  10099136001 ns       142539 ns            1
+BM_deque/8192/3  8127706770 ns       188921 ns            1
+BM_deque/8192/4  6933406001 ns       728231 ns            1
+BM_deque/16384/1 8424789693 ns       107616 ns            1
+BM_deque/16384/2 8620007923 ns       116463 ns            1
+BM_deque/16384/3 8456856847 ns       120078 ns            1
+BM_deque/16384/4 7070060308 ns       273922 ns            1
+```
+**8xW,8xR**
+```
+Run on (3 X 1391 MHz CPU s)
+Load Average: 8.93, 8.27, 11.25
+-----------------------------------------------------------
+Benchmark                 Time             CPU   Iterations
+-----------------------------------------------------------
+BM_ypipe/0/0     3836061924 ns       632538 ns            1
+BM_ypipe/100/1   4740753270 ns      1191177 ns           10
+BM_ypipe/100/2   2971674385 ns      1259923 ns            1
+BM_ypipe/100/3   3982867385 ns       646461 ns            1
+BM_ypipe/100/4   4944977692 ns      2189845 ns            1
+BM_ypipe/1024/1  2728583115 ns      1004639 ns           10
+BM_ypipe/1024/2  2539928331 ns       907738 ns           10
+BM_ypipe/1024/3  3385754770 ns       682539 ns            1
+BM_ypipe/1024/4  3323195385 ns       609691 ns            1
+BM_ypipe/8192/1  2895098085 ns       901954 ns           10
+BM_ypipe/8192/2  3000201924 ns      1195769 ns            1
+BM_ypipe/8192/3  5462275385 ns      2749076 ns            1
+BM_ypipe/8192/4  3232908769 ns       611770 ns            1
+BM_ypipe/16384/1 4052949616 ns       615153 ns            1
+BM_ypipe/16384/2 3460483231 ns      1268539 ns            1
+BM_ypipe/16384/3 4097771916 ns       989977 ns           10
+BM_ypipe/16384/4 3565441308 ns       691000 ns            1
+
+Run on (3 X 1391 MHz CPU s)
+Load Average: 8.26, 8.22, 10.53
+----------------------------------------------------------------
+Benchmark                      Time             CPU   Iterations
+----------------------------------------------------------------
+BM_ypipe_lf_s/0/0     4079309131 ns      1043439 ns           10
+BM_ypipe_lf_s/100/1   3850407770 ns       634924 ns            1
+BM_ypipe_lf_s/100/2   4928500462 ns       710078 ns            1
+BM_ypipe_lf_s/100/3   3502437693 ns       782768 ns            1
+BM_ypipe_lf_s/100/4   3293010000 ns       733536 ns            1
+BM_ypipe_lf_s/1024/1  3469353846 ns      2255848 ns            1
+BM_ypipe_lf_s/1024/2  2583805616 ns       810385 ns            1
+BM_ypipe_lf_s/1024/3  2897404700 ns      1284469 ns           10
+BM_ypipe_lf_s/1024/4  3053080462 ns       944301 ns           10
+BM_ypipe_lf_s/8192/1  3047359300 ns      1120469 ns           10
+BM_ypipe_lf_s/8192/2  3884588539 ns      1050462 ns            1
+BM_ypipe_lf_s/8192/3  3354758924 ns      1432539 ns            1
+BM_ypipe_lf_s/8192/4  3878311092 ns      1132008 ns           10
+BM_ypipe_lf_s/16384/1 3793031300 ns      1048354 ns           10
+BM_ypipe_lf_s/16384/2 2637969462 ns       943770 ns            1
+BM_ypipe_lf_s/16384/3 3270587069 ns      1001069 ns           10
+BM_ypipe_lf_s/16384/4 5774170155 ns      1356153 ns            1
 ```
