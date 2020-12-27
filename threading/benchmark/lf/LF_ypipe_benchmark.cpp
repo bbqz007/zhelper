@@ -23,6 +23,11 @@
  *
  */
 
+//#define WORKLOAD_WITH_REDIS 1
+//#define WORKLOAD_WITH_MEMCACHE 1
+//#define WORKLOAD_WITH_MEMCACHE_USE_BINARY_KEY 1
+//#define WORKLOAD_WITH_MEMCACHE_ON_UDP 1
+
 #include "ypipe.hpp"
 #include <string.h>
 #include <thread>
@@ -34,6 +39,13 @@
 #include <deque>
 #include <iostream>
 #include <benchmark/benchmark.h>
+#ifdef WORKLOAD_WITH_REDIS
+#include <hiredis/hiredis.h>
+#endif // WORKLOAD_WITH_REDIS
+#ifdef WORKLOAD_WITH_MEMCACHE
+#include <libmemcached/memcached.hpp>
+#include <libmemcached/memcached.h>
+#endif // WORKLOAD_WITH_MEMCACHE
 
 void BM_yield0(benchmark::State& state)
 {
@@ -66,7 +78,57 @@ static char affine_mem_w[(affine_mem_cnt+1)*affine_L3_size];
 static volatile int affine_mem_cur = 0;
 thread_local int tls_id;
 
+#ifdef WORKLOAD_WITH_MEMCACHE
+using namespace memcache;
+thread_local memcache::Memcache* tls_memcache = 0;
+static const char* memcache_host = "192.168.43.1";
+static int memcache_port = 11211;
+static int memcache_udp_port = 11222;
+#endif // WORKLOAD_WITH_MEMCACHE
+
+
+#ifdef WORKLOAD_WITH_REDIS
+thread_local redisContext* tls_redis = 0;
+static const char* redis_host = "192.168.43.1";
+static int redis_port = 6379;
+#endif // WORKLOAD_WITH_REDIS
+
+void rthread_init_local()
+{
+#ifdef WORKLOAD_WITH_REDIS
+    tls_redis = redisConnect(redis_host, redis_port);
+#endif // WORKLOAD_WITH_REDIS
+#ifdef WORKLOAD_WITH_MEMCACHE
+    tls_memcache = new memcache::Memcache;
+# ifdef WORKLOAD_WITH_MEMCACHE_ON_UDP
+    tls_memcache->addServer(memcache_host, memcache_udp_port);
+    tls_memcache->setBehavior(MEMCACHED_BEHAVIOR_USE_UDP, 1);
+# else
+    tls_memcache->addServer(memcache_host, memcache_port);
+# endif
+# ifdef WORKLOAD_WITH_MEMCACHE_USE_BINARY_KEY
+    tls_memcache->setBehavior(MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
+# endif
+#endif // WORKLOAD_WITH_MEMCACHE
+}
+
+void rthread_free_local()
+{
+#ifdef WORKLOAD_WITH_REDIS
+    redisFree(tls_redis);
+    tls_redis = 0;
+#endif // WORKLOAD_WITH_REDIS
+#ifdef WORKLOAD_WITH_MEMCACHE
+    delete tls_memcache;
+    tls_memcache = 0;
+#endif // WORKLOAD_WITH_MEMCACHE
+}
+
+#if defined(WORKLOAD_WITH_REDIS) || defined(WORKLOAD_WITH_MEMCACHE)
+#define N_TOTAL_MSG 1000
+#else
 #define N_TOTAL_MSG 100000
+#endif // WORKLOAD_WITH_REDIS || WORKLOAD_WITH_MEMCACHE
 #define N_RTHREADS 8
 #define N_RMSG_PER_THREAD (N_TOTAL_MSG/N_RTHREADS)
 #define N_WTHREADS 8
@@ -166,6 +228,49 @@ int payload(T& j, int size = 0, int policy = 0)
 #if DEBUG_CHECK_STAT
     ++payload_stat[j];
 #endif
+#ifdef WORKLOAD_WITH_REDIS
+    if (tls_redis)
+    {
+        for (int y = 0; y < 2; ++y)
+        {
+            redisReply* reply;
+            reply = (redisReply*)redisCommand(tls_redis,"SET %d %d", j, j);
+            freeReplyObject(reply);
+            reply = (redisReply*)redisCommand(tls_redis,"GET %d %d", j);
+            freeReplyObject(reply);
+        }
+    }
+#endif // WORKLOAD_WITH_REDIS
+#ifdef WORKLOAD_WITH_MEMCACHE
+    if (tls_memcache)
+    {
+        for (int y = 0; y < 2; ++y)
+        {
+            char* res = 0;
+            size_t reslen = 0;
+            memcached_return_t err;
+            char key[64];
+            sprintf(key, "%d", j);
+            memcached_set((memcached_st*)tls_memcache->getImpl(),
+# ifndef WORKLOAD_WITH_MEMCACHE_USE_BINARY_KEY
+                          (const char*)key, strlen(key),
+                          (const char*)key, strlen(key),
+# else
+                          (const char*)&j, sizeof(j),
+                          (const char*)&j, sizeof(j),
+# endif
+                          time_t(0), 0);
+            res = memcached_get((memcached_st*)tls_memcache->getImpl(),
+# ifdef WORKLOAD_WITH_MEMCACHE_USE_BINARY_KEY
+                                  (const char*)&j, sizeof(j),
+# else
+                                  (const char*)key, strlen(key),
+# endif
+                                  &reslen, 0, &err);
+            free(res);
+        }
+    }
+#endif // WORKLOAD_WITH_MEMCACHE
     (void) j;
 #if 0
     for (int y = 0; y < 4; ++y)
@@ -274,6 +379,7 @@ void BM_yield2(benchmark::State& state)
             new thread([&](){
                 int j = 0;
 				tls_id = cnt;
+				rthread_init_local();
                 for (int i = 0; i < 10000; ++i)
                 {
                     //this_thread::yield();
@@ -332,6 +438,7 @@ void BM_ypipe(benchmark::State& state)
                 int bugcnt = 0;
                 int j = 0;
 				tls_id = cnt;
+				rthread_init_local();
                 for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
@@ -371,6 +478,7 @@ void BM_ypipe(benchmark::State& state)
                     /// how many time the writers were interrupted before notify.
                     //cerr << "bugs :" << bugcnt << endl;
                 }
+                rthread_free_local();
         })));
         for_each(thrds.begin(), thrds.end(), [](shared_ptr<thread>& thr){ thr->join(); });
     }
@@ -419,6 +527,7 @@ void BM_ypipe_s(benchmark::State& state)
             new thread([&](){
                 int j = 0;
 				tls_id = cnt;
+				rthread_init_local();
                 for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
@@ -446,6 +555,7 @@ void BM_ypipe_s(benchmark::State& state)
                     // cout << j << "\n";
                     payload(j, affine_size, affine_policy);
                 }
+                rthread_free_local();
         })));
         for_each(thrds.begin(), thrds.end(), [](shared_ptr<thread>& thr){ thr->join(); });
     }
@@ -496,6 +606,7 @@ void BM_ypipe2(benchmark::State& state)
             new thread([&](){
                 int j = 0;
 				tls_id = cnt;
+				rthread_init_local();
                 for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
@@ -517,6 +628,7 @@ void BM_ypipe2(benchmark::State& state)
                     // cout << j << "\n";
                     payload(j, affine_size, affine_policy);
                 }
+                rthread_free_local();
             })));
         for_each(thrds.begin(), thrds.end(), [](shared_ptr<thread>& thr){ thr->join(); });
     }
@@ -561,6 +673,7 @@ void BM_deque(benchmark::State& state)
                 int bugcnt = 0;
                 int j = 0;
 				tls_id = cnt;
+				rthread_init_local();
                 for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
@@ -596,6 +709,7 @@ void BM_deque(benchmark::State& state)
                 {
                     cerr << "bugs :" << bugcnt << endl;
                 }
+                rthread_free_local();
             })));
         try
         {
@@ -646,6 +760,7 @@ void BM_deque0(benchmark::State& state)
             new thread([&](){
                 int j = 0;
 				tls_id = cnt;
+				rthread_init_local();
                 for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
@@ -673,6 +788,7 @@ void BM_deque0(benchmark::State& state)
                     // cout << j << "\n";
                     payload(j, affine_size, affine_policy);
                 }
+                rthread_free_local();
             })));
         try
         {
@@ -725,6 +841,7 @@ void BM_deque_lf(benchmark::State& state)
             new thread([&](){
                 int j = 0;
 				tls_id = cnt;
+				rthread_init_local();
                 for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
@@ -780,6 +897,7 @@ void BM_deque_lf(benchmark::State& state)
                     // cout << j << "\n";
                     payload(j, affine_size, affine_policy);
                 }
+                rthread_free_local();
             })));
         try
         {
@@ -834,6 +952,7 @@ void BM_deque2_lf(benchmark::State& state)
             new thread([&](){
                 int j = 0;
 				tls_id = cnt;
+				rthread_init_local();
                 for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
@@ -903,6 +1022,7 @@ void BM_deque2_lf(benchmark::State& state)
                     // cout << j << "\n";
                     payload(j, affine_size, affine_policy);
                 }
+                rthread_free_local();
             })));
         try
         {
@@ -957,6 +1077,7 @@ void BM_deque2_lf_s(benchmark::State& state)
             new thread([&](){
                 int j = 0;
 				tls_id = cnt;
+				rthread_init_local();
                 for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
@@ -1024,6 +1145,7 @@ void BM_deque2_lf_s(benchmark::State& state)
                     // cout << j << "\n";
                     payload(j, affine_size, affine_policy);
                 }
+                rthread_free_local();
             })));
         try
         {
@@ -1083,6 +1205,7 @@ void BM_ypipe_lf(benchmark::State& state)
             new thread([&](){
                 int j = 0;
 				tls_id = cnt;
+				rthread_init_local();
                 for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
@@ -1202,8 +1325,7 @@ void BM_ypipe_lf(benchmark::State& state)
                     // cout << j << "\n";
                     payload(j, affine_size, affine_policy);
                 }
-
-
+                rthread_free_local();
             })));
         try
         {
@@ -1258,6 +1380,7 @@ void BM_deque_lf_s(benchmark::State& state)
             new thread([&](){
                 int j = 0;
 				tls_id = cnt;
+				rthread_init_local();
                 for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
@@ -1309,6 +1432,7 @@ void BM_deque_lf_s(benchmark::State& state)
                     // cout << j << "\n";
                     payload(j, affine_size, affine_policy);
                 }
+                rthread_free_local();
             })));
         try
         {
@@ -1366,6 +1490,7 @@ void BM_ypipe_lf_s(benchmark::State& state)
             new thread([&](){
                 int j = 0;
 				tls_id = cnt;
+				rthread_init_local();
                 for (int i = 0; i < N_RMSG_PER_THREAD; ++i)
                 {
                     while (1)
@@ -1423,6 +1548,7 @@ void BM_ypipe_lf_s(benchmark::State& state)
                     // cout << j << "\n";
                     payload(j, affine_size, affine_policy);
                 }
+                rthread_free_local();
             })));
         try
         {
