@@ -1,12 +1,6 @@
 a benchmark for leader-follower threading model.
 
-it essentially has two wait queues.
 
-one is message wait queue or event-poller
-
-the other is follower wait queue.
-
-the benefit is that it limits the number of threads which race to access message queue. although the old usage of lf is to avoid the buffer memory copied from socket from re-caching to cpu. nowadays it is commonly used for disaptch executions taking context.
 
 at first, i assume you are unstanding what futexes are. mutexes and condition_variables are essential wait queues.
 
@@ -41,12 +35,20 @@ a single thread yield 10k times in multi-cores platform, it is more expensive th
 
 condition variable notify perform poorly in multi parallel threads.
 
+### affine
+1. half-sync/half-async queueing. writer thread write msg to a location, reader thread read msg from different location to mock cache  missing.
+2. LF, mock event handler's private buffer.
+3. LF, mock thread specifit storages.
+4. LF, use thread stack.
+
 ### workload
 test a threading model which applying to empty workloads, it has no sence. 
 
 i add two kind of workloads.
 1. `computing only`, and random cycles.
 2. `yield` (which leads switches of threads,) mock real user logic (may access redis, rpc, sql database, or local critical resources) to block.
+3. `redis`
+4. `memcache`
 
 ### test platform
 1. i5 450m, year 2010 (10 yrs before today, 10 yrs after lf pattern), 2 cores(4 threads)@2.4ghz, 3MB L3 cache.
