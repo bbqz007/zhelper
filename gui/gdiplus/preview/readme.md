@@ -1,5 +1,5 @@
-- AliceBlue            = ![0xF0F8FF] `0xFFF0F8FF`
-- AntiqueWhite         = ![0xFFFAEBD7] `0xFFFAEBD7`
+- AliceBlue            = ![#0xF0F8FF] `0xFFF0F8FF`
+- AntiqueWhite         = ![#0xFFFAEBD7] `0xFFFAEBD7`
 - Aqua                 = ![0xFF00FFFF] `0xFF00FFFF`
 - Aquamarine           = ![0xFF7FFFD4] `0xFF7FFFD4`
 - Azure                = ![0xFFF0FFFF] `0xFFF0FFFF`
