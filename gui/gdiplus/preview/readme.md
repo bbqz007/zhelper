@@ -1,141 +1,282 @@
-- AliceBlue            = ![F0F8FF](https://via.placeholder.com/15/F0F8FF/000000?text=+) `F0F8FF`
-- AntiqueWhite         = ![FAEBD7](https://via.placeholder.com/15/FAEBD7/000000?text=+) `FAEBD7`
-- Aqua                 = ![00FFFF](https://via.placeholder.com/15/00FFFF/000000?text=+) `00FFFF`
-- Aquamarine           = ![7FFFD4](https://via.placeholder.com/15/7FFFD4/000000?text=+) `7FFFD4`
-- Azure                = ![F0FFFF](https://via.placeholder.com/15/F0FFFF/000000?text=+) `F0FFFF`
-- Beige                = ![F5F5DC](https://via.placeholder.com/15/F5F5DC/000000?text=+) `F5F5DC`
-- Bisque               = ![FFE4C4](https://via.placeholder.com/15/FFE4C4/000000?text=+) `FFE4C4`
-- Black                = ![000000](https://via.placeholder.com/15/000000/000000?text=+) `000000`
-- BlanchedAlmond       = ![FFEBCD](https://via.placeholder.com/15/FFEBCD/000000?text=+) `FFEBCD`
-- Blue                 = ![0000FF](https://via.placeholder.com/15/0000FF/000000?text=+) `0000FF`
-- BlueViolet           = ![8A2BE2](https://via.placeholder.com/15/8A2BE2/000000?text=+) `8A2BE2`
-- Brown                = ![A52A2A](https://via.placeholder.com/15/A52A2A/000000?text=+) `A52A2A`
-- BurlyWood            = ![DEB887](https://via.placeholder.com/15/DEB887/000000?text=+) `DEB887`
-- CadetBlue            = ![5F9EA0](https://via.placeholder.com/15/5F9EA0/000000?text=+) `5F9EA0`
-- Chartreuse           = ![7FFF00](https://via.placeholder.com/15/7FFF00/000000?text=+) `7FFF00`
-- Chocolate            = ![D2691E](https://via.placeholder.com/15/D2691E/000000?text=+) `D2691E`
-- Coral                = ![FF7F50](https://via.placeholder.com/15/FF7F50/000000?text=+) `FF7F50`
-- CornflowerBlue       = ![6495ED](https://via.placeholder.com/15/6495ED/000000?text=+) `6495ED`
-- Cornsilk             = ![FFF8DC](https://via.placeholder.com/15/FFF8DC/000000?text=+) `FFF8DC`
-- Crimson              = ![DC143C](https://via.placeholder.com/15/DC143C/000000?text=+) `DC143C`
-- Cyan                 = ![00FFFF](https://via.placeholder.com/15/00FFFF/000000?text=+) `00FFFF`
-- DarkBlue             = ![00008B](https://via.placeholder.com/15/00008B/000000?text=+) `00008B`
-- DarkCyan             = ![008B8B](https://via.placeholder.com/15/008B8B/000000?text=+) `008B8B`
-- DarkGoldenrod        = ![B8860B](https://via.placeholder.com/15/B8860B/000000?text=+) `B8860B`
-- DarkGray             = ![A9A9A9](https://via.placeholder.com/15/A9A9A9/000000?text=+) `A9A9A9`
-- DarkGreen            = ![006400](https://via.placeholder.com/15/006400/000000?text=+) `006400`
-- DarkKhaki            = ![BDB76B](https://via.placeholder.com/15/BDB76B/000000?text=+) `BDB76B`
-- DarkMagenta          = ![8B008B](https://via.placeholder.com/15/8B008B/000000?text=+) `8B008B`
-- DarkOliveGreen       = ![556B2F](https://via.placeholder.com/15/556B2F/000000?text=+) `556B2F`
-- DarkOrange           = ![FF8C00](https://via.placeholder.com/15/FF8C00/000000?text=+) `FF8C00`
-- DarkOrchid           = ![9932CC](https://via.placeholder.com/15/9932CC/000000?text=+) `9932CC`
-- DarkRed              = ![8B0000](https://via.placeholder.com/15/8B0000/000000?text=+) `8B0000`
-- DarkSalmon           = ![E9967A](https://via.placeholder.com/15/E9967A/000000?text=+) `E9967A`
-- DarkSeaGreen         = ![8FBC8B](https://via.placeholder.com/15/8FBC8B/000000?text=+) `8FBC8B`
-- DarkSlateBlue        = ![483D8B](https://via.placeholder.com/15/483D8B/000000?text=+) `483D8B`
-- DarkSlateGray        = ![2F4F4F](https://via.placeholder.com/15/2F4F4F/000000?text=+) `2F4F4F`
-- DarkTurquoise        = ![00CED1](https://via.placeholder.com/15/00CED1/000000?text=+) `00CED1`
-- DarkViolet           = ![9400D3](https://via.placeholder.com/15/9400D3/000000?text=+) `9400D3`
-- DeepPink             = ![FF1493](https://via.placeholder.com/15/FF1493/000000?text=+) `FF1493`
-- DeepSkyBlue          = ![00BFFF](https://via.placeholder.com/15/00BFFF/000000?text=+) `00BFFF`
-- DimGray              = ![696969](https://via.placeholder.com/15/696969/000000?text=+) `696969`
-- DodgerBlue           = ![1E90FF](https://via.placeholder.com/15/1E90FF/000000?text=+) `1E90FF`
-- Firebrick            = ![B22222](https://via.placeholder.com/15/B22222/000000?text=+) `B22222`
-- FloralWhite          = ![FFFAF0](https://via.placeholder.com/15/FFFAF0/000000?text=+) `FFFAF0`
-- ForestGreen          = ![228B22](https://via.placeholder.com/15/228B22/000000?text=+) `228B22`
-- Fuchsia              = ![FF00FF](https://via.placeholder.com/15/FF00FF/000000?text=+) `FF00FF`
-- Gainsboro            = ![DCDCDC](https://via.placeholder.com/15/DCDCDC/000000?text=+) `DCDCDC`
-- GhostWhite           = ![F8F8FF](https://via.placeholder.com/15/F8F8FF/000000?text=+) `F8F8FF`
-- Gold                 = ![FFD700](https://via.placeholder.com/15/FFD700/000000?text=+) `FFD700`
-- Goldenrod            = ![DAA520](https://via.placeholder.com/15/DAA520/000000?text=+) `DAA520`
-- Gray                 = ![808080](https://via.placeholder.com/15/808080/000000?text=+) `808080`
-- Green                = ![008000](https://via.placeholder.com/15/008000/000000?text=+) `008000`
-- GreenYellow          = ![ADFF2F](https://via.placeholder.com/15/ADFF2F/000000?text=+) `ADFF2F`
-- Honeydew             = ![F0FFF0](https://via.placeholder.com/15/F0FFF0/000000?text=+) `F0FFF0`
-- HotPink              = ![FF69B4](https://via.placeholder.com/15/FF69B4/000000?text=+) `FF69B4`
-- IndianRed            = ![CD5C5C](https://via.placeholder.com/15/CD5C5C/000000?text=+) `CD5C5C`
-- Indigo               = ![4B0082](https://via.placeholder.com/15/4B0082/000000?text=+) `4B0082`
-- Ivory                = ![FFFFF0](https://via.placeholder.com/15/FFFFF0/000000?text=+) `FFFFF0`
-- Khaki                = ![F0E68C](https://via.placeholder.com/15/F0E68C/000000?text=+) `F0E68C`
-- Lavender             = ![E6E6FA](https://via.placeholder.com/15/E6E6FA/000000?text=+) `E6E6FA`
-- LavenderBlush        = ![FFF0F5](https://via.placeholder.com/15/FFF0F5/000000?text=+) `FFF0F5`
-- LawnGreen            = ![7CFC00](https://via.placeholder.com/15/7CFC00/000000?text=+) `7CFC00`
-- LemonChiffon         = ![FFFACD](https://via.placeholder.com/15/FFFACD/000000?text=+) `FFFACD`
-- LightBlue            = ![ADD8E6](https://via.placeholder.com/15/ADD8E6/000000?text=+) `ADD8E6`
-- LightCoral           = ![F08080](https://via.placeholder.com/15/F08080/000000?text=+) `F08080`
-- LightCyan            = ![E0FFFF](https://via.placeholder.com/15/E0FFFF/000000?text=+) `E0FFFF`
-- LightGoldenrodYellow = ![FAFAD2](https://via.placeholder.com/15/FAFAD2/000000?text=+) `FAFAD2`
-- LightGray            = ![D3D3D3](https://via.placeholder.com/15/D3D3D3/000000?text=+) `D3D3D3`
-- LightGreen           = ![90EE90](https://via.placeholder.com/15/90EE90/000000?text=+) `90EE90`
-- LightPink            = ![FFB6C1](https://via.placeholder.com/15/FFB6C1/000000?text=+) `FFB6C1`
-- LightSalmon          = ![FFA07A](https://via.placeholder.com/15/FFA07A/000000?text=+) `FFA07A`
-- LightSeaGreen        = ![20B2AA](https://via.placeholder.com/15/20B2AA/000000?text=+) `20B2AA`
-- LightSkyBlue         = ![87CEFA](https://via.placeholder.com/15/87CEFA/000000?text=+) `87CEFA`
-- LightSlateGray       = ![778899](https://via.placeholder.com/15/778899/000000?text=+) `778899`
-- LightSteelBlue       = ![B0C4DE](https://via.placeholder.com/15/B0C4DE/000000?text=+) `B0C4DE`
-- LightYellow          = ![FFFFE0](https://via.placeholder.com/15/FFFFE0/000000?text=+) `FFFFE0`
-- Lime                 = ![00FF00](https://via.placeholder.com/15/00FF00/000000?text=+) `00FF00`
-- LimeGreen            = ![32CD32](https://via.placeholder.com/15/32CD32/000000?text=+) `32CD32`
-- Linen                = ![FAF0E6](https://via.placeholder.com/15/FAF0E6/000000?text=+) `FAF0E6`
-- Magenta              = ![FF00FF](https://via.placeholder.com/15/FF00FF/000000?text=+) `FF00FF`
-- Maroon               = ![800000](https://via.placeholder.com/15/800000/000000?text=+) `800000`
-- MediumAquamarine     = ![66CDAA](https://via.placeholder.com/15/66CDAA/000000?text=+) `66CDAA`
-- MediumBlue           = ![0000CD](https://via.placeholder.com/15/0000CD/000000?text=+) `0000CD`
-- MediumOrchid         = ![BA55D3](https://via.placeholder.com/15/BA55D3/000000?text=+) `BA55D3`
-- MediumPurple         = ![9370DB](https://via.placeholder.com/15/9370DB/000000?text=+) `9370DB`
-- MediumSeaGreen       = ![3CB371](https://via.placeholder.com/15/3CB371/000000?text=+) `3CB371`
-- MediumSlateBlue      = ![7B68EE](https://via.placeholder.com/15/7B68EE/000000?text=+) `7B68EE`
-- MediumSpringGreen    = ![00FA9A](https://via.placeholder.com/15/00FA9A/000000?text=+) `00FA9A`
-- MediumTurquoise      = ![48D1CC](https://via.placeholder.com/15/48D1CC/000000?text=+) `48D1CC`
-- MediumVioletRed      = ![C71585](https://via.placeholder.com/15/C71585/000000?text=+) `C71585`
-- MidnightBlue         = ![191970](https://via.placeholder.com/15/191970/000000?text=+) `191970`
-- MintCream            = ![F5FFFA](https://via.placeholder.com/15/F5FFFA/000000?text=+) `F5FFFA`
-- MistyRose            = ![FFE4E1](https://via.placeholder.com/15/FFE4E1/000000?text=+) `FFE4E1`
-- Moccasin             = ![FFE4B5](https://via.placeholder.com/15/FFE4B5/000000?text=+) `FFE4B5`
-- NavajoWhite          = ![FFDEAD](https://via.placeholder.com/15/FFDEAD/000000?text=+) `FFDEAD`
-- Navy                 = ![000080](https://via.placeholder.com/15/000080/000000?text=+) `000080`
-- OldLace              = ![FDF5E6](https://via.placeholder.com/15/FDF5E6/000000?text=+) `FDF5E6`
-- Olive                = ![808000](https://via.placeholder.com/15/808000/000000?text=+) `808000`
-- OliveDrab            = ![6B8E23](https://via.placeholder.com/15/6B8E23/000000?text=+) `6B8E23`
-- Orange               = ![FFA500](https://via.placeholder.com/15/FFA500/000000?text=+) `FFA500`
-- OrangeRed            = ![FF4500](https://via.placeholder.com/15/FF4500/000000?text=+) `FF4500`
-- Orchid               = ![DA70D6](https://via.placeholder.com/15/DA70D6/000000?text=+) `DA70D6`
-- PaleGoldenrod        = ![EEE8AA](https://via.placeholder.com/15/EEE8AA/000000?text=+) `EEE8AA`
-- PaleGreen            = ![98FB98](https://via.placeholder.com/15/98FB98/000000?text=+) `98FB98`
-- PaleTurquoise        = ![AFEEEE](https://via.placeholder.com/15/AFEEEE/000000?text=+) `AFEEEE`
-- PaleVioletRed        = ![DB7093](https://via.placeholder.com/15/DB7093/000000?text=+) `DB7093`
-- PapayaWhip           = ![FFEFD5](https://via.placeholder.com/15/FFEFD5/000000?text=+) `FFEFD5`
-- PeachPuff            = ![FFDAB9](https://via.placeholder.com/15/FFDAB9/000000?text=+) `FFDAB9`
-- Peru                 = ![CD853F](https://via.placeholder.com/15/CD853F/000000?text=+) `CD853F`
-- Pink                 = ![FFC0CB](https://via.placeholder.com/15/FFC0CB/000000?text=+) `FFC0CB`
-- Plum                 = ![DDA0DD](https://via.placeholder.com/15/DDA0DD/000000?text=+) `DDA0DD`
-- PowderBlue           = ![B0E0E6](https://via.placeholder.com/15/B0E0E6/000000?text=+) `B0E0E6`
-- Purple               = ![800080](https://via.placeholder.com/15/800080/000000?text=+) `800080`
-- Red                  = ![FF0000](https://via.placeholder.com/15/FF0000/000000?text=+) `FF0000`
-- RosyBrown            = ![BC8F8F](https://via.placeholder.com/15/BC8F8F/000000?text=+) `BC8F8F`
-- RoyalBlue            = ![4169E1](https://via.placeholder.com/15/4169E1/000000?text=+) `4169E1`
-- SaddleBrown          = ![8B4513](https://via.placeholder.com/15/8B4513/000000?text=+) `8B4513`
-- Salmon               = ![FA8072](https://via.placeholder.com/15/FA8072/000000?text=+) `FA8072`
-- SandyBrown           = ![F4A460](https://via.placeholder.com/15/F4A460/000000?text=+) `F4A460`
-- SeaGreen             = ![2E8B57](https://via.placeholder.com/15/2E8B57/000000?text=+) `2E8B57`
-- SeaShell             = ![FFF5EE](https://via.placeholder.com/15/FFF5EE/000000?text=+) `FFF5EE`
-- Sienna               = ![A0522D](https://via.placeholder.com/15/A0522D/000000?text=+) `A0522D`
-- Silver               = ![C0C0C0](https://via.placeholder.com/15/C0C0C0/000000?text=+) `C0C0C0`
-- SkyBlue              = ![87CEEB](https://via.placeholder.com/15/87CEEB/000000?text=+) `87CEEB`
-- SlateBlue            = ![6A5ACD](https://via.placeholder.com/15/6A5ACD/000000?text=+) `6A5ACD`
-- SlateGray            = ![708090](https://via.placeholder.com/15/708090/000000?text=+) `708090`
-- Snow                 = ![FFFAFA](https://via.placeholder.com/15/FFFAFA/000000?text=+) `FFFAFA`
-- SpringGreen          = ![00FF7F](https://via.placeholder.com/15/00FF7F/000000?text=+) `00FF7F`
-- SteelBlue            = ![4682B4](https://via.placeholder.com/15/4682B4/000000?text=+) `4682B4`
-- Tan                  = ![D2B48C](https://via.placeholder.com/15/D2B48C/000000?text=+) `D2B48C`
-- Teal                 = ![008080](https://via.placeholder.com/15/008080/000000?text=+) `008080`
-- Thistle              = ![D8BFD8](https://via.placeholder.com/15/D8BFD8/000000?text=+) `D8BFD8`
-- Tomato               = ![FF6347](https://via.placeholder.com/15/FF6347/000000?text=+) `FF6347`
-- Transparent          = ![FFFFFF](https://via.placeholder.com/15/FFFFFF/000000?text=+) `FFFFFF`
-- Turquoise            = ![40E0D0](https://via.placeholder.com/15/40E0D0/000000?text=+) `40E0D0`
-- Violet               = ![EE82EE](https://via.placeholder.com/15/EE82EE/000000?text=+) `EE82EE`
-- Wheat                = ![F5DEB3](https://via.placeholder.com/15/F5DEB3/000000?text=+) `F5DEB3`
-- White                = ![FFFFFF](https://via.placeholder.com/15/FFFFFF/000000?text=+) `FFFFFF`
-- WhiteSmoke           = ![F5F5F5](https://via.placeholder.com/15/F5F5F5/000000?text=+) `F5F5F5`
-- Yellow               = ![FFFF00](https://via.placeholder.com/15/FFFF00/000000?text=+) `FFFF00`
-- YellowGreen          = ![9ACD32](https://via.placeholder.com/15/9ACD32/000000?text=+) `9ACD32`
+AliceBlue            = ![F0F8FF](https://via.placeholder.com/15/F0F8FF/000000?text=+) `F0F8FF`
+
+AntiqueWhite         = ![FAEBD7](https://via.placeholder.com/15/FAEBD7/000000?text=+) `FAEBD7`
+
+Aqua                 = ![00FFFF](https://via.placeholder.com/15/00FFFF/000000?text=+) `00FFFF`
+
+Aquamarine           = ![7FFFD4](https://via.placeholder.com/15/7FFFD4/000000?text=+) `7FFFD4`
+
+Azure                = ![F0FFFF](https://via.placeholder.com/15/F0FFFF/000000?text=+) `F0FFFF`
+
+Beige                = ![F5F5DC](https://via.placeholder.com/15/F5F5DC/000000?text=+) `F5F5DC`
+
+Bisque               = ![FFE4C4](https://via.placeholder.com/15/FFE4C4/000000?text=+) `FFE4C4`
+
+Black                = ![000000](https://via.placeholder.com/15/000000/000000?text=+) `000000`
+
+BlanchedAlmond       = ![FFEBCD](https://via.placeholder.com/15/FFEBCD/000000?text=+) `FFEBCD`
+
+Blue                 = ![0000FF](https://via.placeholder.com/15/0000FF/000000?text=+) `0000FF`
+
+BlueViolet           = ![8A2BE2](https://via.placeholder.com/15/8A2BE2/000000?text=+) `8A2BE2`
+
+Brown                = ![A52A2A](https://via.placeholder.com/15/A52A2A/000000?text=+) `A52A2A`
+
+BurlyWood            = ![DEB887](https://via.placeholder.com/15/DEB887/000000?text=+) `DEB887`
+
+CadetBlue            = ![5F9EA0](https://via.placeholder.com/15/5F9EA0/000000?text=+) `5F9EA0`
+
+Chartreuse           = ![7FFF00](https://via.placeholder.com/15/7FFF00/000000?text=+) `7FFF00`
+
+Chocolate            = ![D2691E](https://via.placeholder.com/15/D2691E/000000?text=+) `D2691E`
+
+Coral                = ![FF7F50](https://via.placeholder.com/15/FF7F50/000000?text=+) `FF7F50`
+
+CornflowerBlue       = ![6495ED](https://via.placeholder.com/15/6495ED/000000?text=+) `6495ED`
+
+Cornsilk             = ![FFF8DC](https://via.placeholder.com/15/FFF8DC/000000?text=+) `FFF8DC`
+
+Crimson              = ![DC143C](https://via.placeholder.com/15/DC143C/000000?text=+) `DC143C`
+
+Cyan                 = ![00FFFF](https://via.placeholder.com/15/00FFFF/000000?text=+) `00FFFF`
+
+DarkBlue             = ![00008B](https://via.placeholder.com/15/00008B/000000?text=+) `00008B`
+
+DarkCyan             = ![008B8B](https://via.placeholder.com/15/008B8B/000000?text=+) `008B8B`
+
+DarkGoldenrod        = ![B8860B](https://via.placeholder.com/15/B8860B/000000?text=+) `B8860B`
+
+DarkGray             = ![A9A9A9](https://via.placeholder.com/15/A9A9A9/000000?text=+) `A9A9A9`
+
+DarkGreen            = ![006400](https://via.placeholder.com/15/006400/000000?text=+) `006400`
+
+DarkKhaki            = ![BDB76B](https://via.placeholder.com/15/BDB76B/000000?text=+) `BDB76B`
+
+DarkMagenta          = ![8B008B](https://via.placeholder.com/15/8B008B/000000?text=+) `8B008B`
+
+DarkOliveGreen       = ![556B2F](https://via.placeholder.com/15/556B2F/000000?text=+) `556B2F`
+
+DarkOrange           = ![FF8C00](https://via.placeholder.com/15/FF8C00/000000?text=+) `FF8C00`
+
+DarkOrchid           = ![9932CC](https://via.placeholder.com/15/9932CC/000000?text=+) `9932CC`
+
+DarkRed              = ![8B0000](https://via.placeholder.com/15/8B0000/000000?text=+) `8B0000`
+
+DarkSalmon           = ![E9967A](https://via.placeholder.com/15/E9967A/000000?text=+) `E9967A`
+
+DarkSeaGreen         = ![8FBC8B](https://via.placeholder.com/15/8FBC8B/000000?text=+) `8FBC8B`
+
+DarkSlateBlue        = ![483D8B](https://via.placeholder.com/15/483D8B/000000?text=+) `483D8B`
+
+DarkSlateGray        = ![2F4F4F](https://via.placeholder.com/15/2F4F4F/000000?text=+) `2F4F4F`
+
+DarkTurquoise        = ![00CED1](https://via.placeholder.com/15/00CED1/000000?text=+) `00CED1`
+
+DarkViolet           = ![9400D3](https://via.placeholder.com/15/9400D3/000000?text=+) `9400D3`
+
+DeepPink             = ![FF1493](https://via.placeholder.com/15/FF1493/000000?text=+) `FF1493`
+
+DeepSkyBlue          = ![00BFFF](https://via.placeholder.com/15/00BFFF/000000?text=+) `00BFFF`
+
+DimGray              = ![696969](https://via.placeholder.com/15/696969/000000?text=+) `696969`
+
+DodgerBlue           = ![1E90FF](https://via.placeholder.com/15/1E90FF/000000?text=+) `1E90FF`
+
+Firebrick            = ![B22222](https://via.placeholder.com/15/B22222/000000?text=+) `B22222`
+
+FloralWhite          = ![FFFAF0](https://via.placeholder.com/15/FFFAF0/000000?text=+) `FFFAF0`
+
+ForestGreen          = ![228B22](https://via.placeholder.com/15/228B22/000000?text=+) `228B22`
+
+Fuchsia              = ![FF00FF](https://via.placeholder.com/15/FF00FF/000000?text=+) `FF00FF`
+
+Gainsboro            = ![DCDCDC](https://via.placeholder.com/15/DCDCDC/000000?text=+) `DCDCDC`
+
+GhostWhite           = ![F8F8FF](https://via.placeholder.com/15/F8F8FF/000000?text=+) `F8F8FF`
+
+Gold                 = ![FFD700](https://via.placeholder.com/15/FFD700/000000?text=+) `FFD700`
+
+Goldenrod            = ![DAA520](https://via.placeholder.com/15/DAA520/000000?text=+) `DAA520`
+
+Gray                 = ![808080](https://via.placeholder.com/15/808080/000000?text=+) `808080`
+
+Green                = ![008000](https://via.placeholder.com/15/008000/000000?text=+) `008000`
+
+GreenYellow          = ![ADFF2F](https://via.placeholder.com/15/ADFF2F/000000?text=+) `ADFF2F`
+
+Honeydew             = ![F0FFF0](https://via.placeholder.com/15/F0FFF0/000000?text=+) `F0FFF0`
+
+HotPink              = ![FF69B4](https://via.placeholder.com/15/FF69B4/000000?text=+) `FF69B4`
+
+IndianRed            = ![CD5C5C](https://via.placeholder.com/15/CD5C5C/000000?text=+) `CD5C5C`
+
+Indigo               = ![4B0082](https://via.placeholder.com/15/4B0082/000000?text=+) `4B0082`
+
+Ivory                = ![FFFFF0](https://via.placeholder.com/15/FFFFF0/000000?text=+) `FFFFF0`
+
+Khaki                = ![F0E68C](https://via.placeholder.com/15/F0E68C/000000?text=+) `F0E68C`
+
+Lavender             = ![E6E6FA](https://via.placeholder.com/15/E6E6FA/000000?text=+) `E6E6FA`
+
+LavenderBlush        = ![FFF0F5](https://via.placeholder.com/15/FFF0F5/000000?text=+) `FFF0F5`
+
+LawnGreen            = ![7CFC00](https://via.placeholder.com/15/7CFC00/000000?text=+) `7CFC00`
+
+LemonChiffon         = ![FFFACD](https://via.placeholder.com/15/FFFACD/000000?text=+) `FFFACD`
+
+LightBlue            = ![ADD8E6](https://via.placeholder.com/15/ADD8E6/000000?text=+) `ADD8E6`
+
+LightCoral           = ![F08080](https://via.placeholder.com/15/F08080/000000?text=+) `F08080`
+
+LightCyan            = ![E0FFFF](https://via.placeholder.com/15/E0FFFF/000000?text=+) `E0FFFF`
+
+LightGoldenrodYellow = ![FAFAD2](https://via.placeholder.com/15/FAFAD2/000000?text=+) `FAFAD2`
+
+LightGray            = ![D3D3D3](https://via.placeholder.com/15/D3D3D3/000000?text=+) `D3D3D3`
+
+LightGreen           = ![90EE90](https://via.placeholder.com/15/90EE90/000000?text=+) `90EE90`
+
+LightPink            = ![FFB6C1](https://via.placeholder.com/15/FFB6C1/000000?text=+) `FFB6C1`
+
+LightSalmon          = ![FFA07A](https://via.placeholder.com/15/FFA07A/000000?text=+) `FFA07A`
+
+LightSeaGreen        = ![20B2AA](https://via.placeholder.com/15/20B2AA/000000?text=+) `20B2AA`
+
+LightSkyBlue         = ![87CEFA](https://via.placeholder.com/15/87CEFA/000000?text=+) `87CEFA`
+
+LightSlateGray       = ![778899](https://via.placeholder.com/15/778899/000000?text=+) `778899`
+
+LightSteelBlue       = ![B0C4DE](https://via.placeholder.com/15/B0C4DE/000000?text=+) `B0C4DE`
+
+LightYellow          = ![FFFFE0](https://via.placeholder.com/15/FFFFE0/000000?text=+) `FFFFE0`
+
+Lime                 = ![00FF00](https://via.placeholder.com/15/00FF00/000000?text=+) `00FF00`
+
+LimeGreen            = ![32CD32](https://via.placeholder.com/15/32CD32/000000?text=+) `32CD32`
+
+Linen                = ![FAF0E6](https://via.placeholder.com/15/FAF0E6/000000?text=+) `FAF0E6`
+
+Magenta              = ![FF00FF](https://via.placeholder.com/15/FF00FF/000000?text=+) `FF00FF`
+
+Maroon               = ![800000](https://via.placeholder.com/15/800000/000000?text=+) `800000`
+
+MediumAquamarine     = ![66CDAA](https://via.placeholder.com/15/66CDAA/000000?text=+) `66CDAA`
+
+MediumBlue           = ![0000CD](https://via.placeholder.com/15/0000CD/000000?text=+) `0000CD`
+
+MediumOrchid         = ![BA55D3](https://via.placeholder.com/15/BA55D3/000000?text=+) `BA55D3`
+
+MediumPurple         = ![9370DB](https://via.placeholder.com/15/9370DB/000000?text=+) `9370DB`
+
+MediumSeaGreen       = ![3CB371](https://via.placeholder.com/15/3CB371/000000?text=+) `3CB371`
+
+MediumSlateBlue      = ![7B68EE](https://via.placeholder.com/15/7B68EE/000000?text=+) `7B68EE`
+
+MediumSpringGreen    = ![00FA9A](https://via.placeholder.com/15/00FA9A/000000?text=+) `00FA9A`
+
+MediumTurquoise      = ![48D1CC](https://via.placeholder.com/15/48D1CC/000000?text=+) `48D1CC`
+
+MediumVioletRed      = ![C71585](https://via.placeholder.com/15/C71585/000000?text=+) `C71585`
+
+MidnightBlue         = ![191970](https://via.placeholder.com/15/191970/000000?text=+) `191970`
+
+MintCream            = ![F5FFFA](https://via.placeholder.com/15/F5FFFA/000000?text=+) `F5FFFA`
+
+MistyRose            = ![FFE4E1](https://via.placeholder.com/15/FFE4E1/000000?text=+) `FFE4E1`
+
+Moccasin             = ![FFE4B5](https://via.placeholder.com/15/FFE4B5/000000?text=+) `FFE4B5`
+
+NavajoWhite          = ![FFDEAD](https://via.placeholder.com/15/FFDEAD/000000?text=+) `FFDEAD`
+
+Navy                 = ![000080](https://via.placeholder.com/15/000080/000000?text=+) `000080`
+
+OldLace              = ![FDF5E6](https://via.placeholder.com/15/FDF5E6/000000?text=+) `FDF5E6`
+
+Olive                = ![808000](https://via.placeholder.com/15/808000/000000?text=+) `808000`
+
+OliveDrab            = ![6B8E23](https://via.placeholder.com/15/6B8E23/000000?text=+) `6B8E23`
+
+Orange               = ![FFA500](https://via.placeholder.com/15/FFA500/000000?text=+) `FFA500`
+
+OrangeRed            = ![FF4500](https://via.placeholder.com/15/FF4500/000000?text=+) `FF4500`
+
+Orchid               = ![DA70D6](https://via.placeholder.com/15/DA70D6/000000?text=+) `DA70D6`
+
+PaleGoldenrod        = ![EEE8AA](https://via.placeholder.com/15/EEE8AA/000000?text=+) `EEE8AA`
+
+PaleGreen            = ![98FB98](https://via.placeholder.com/15/98FB98/000000?text=+) `98FB98`
+
+PaleTurquoise        = ![AFEEEE](https://via.placeholder.com/15/AFEEEE/000000?text=+) `AFEEEE`
+
+PaleVioletRed        = ![DB7093](https://via.placeholder.com/15/DB7093/000000?text=+) `DB7093`
+
+PapayaWhip           = ![FFEFD5](https://via.placeholder.com/15/FFEFD5/000000?text=+) `FFEFD5`
+
+PeachPuff            = ![FFDAB9](https://via.placeholder.com/15/FFDAB9/000000?text=+) `FFDAB9`
+
+Peru                 = ![CD853F](https://via.placeholder.com/15/CD853F/000000?text=+) `CD853F`
+
+Pink                 = ![FFC0CB](https://via.placeholder.com/15/FFC0CB/000000?text=+) `FFC0CB`
+
+Plum                 = ![DDA0DD](https://via.placeholder.com/15/DDA0DD/000000?text=+) `DDA0DD`
+
+PowderBlue           = ![B0E0E6](https://via.placeholder.com/15/B0E0E6/000000?text=+) `B0E0E6`
+
+Purple               = ![800080](https://via.placeholder.com/15/800080/000000?text=+) `800080`
+
+Red                  = ![FF0000](https://via.placeholder.com/15/FF0000/000000?text=+) `FF0000`
+
+RosyBrown            = ![BC8F8F](https://via.placeholder.com/15/BC8F8F/000000?text=+) `BC8F8F`
+
+RoyalBlue            = ![4169E1](https://via.placeholder.com/15/4169E1/000000?text=+) `4169E1`
+
+SaddleBrown          = ![8B4513](https://via.placeholder.com/15/8B4513/000000?text=+) `8B4513`
+
+Salmon               = ![FA8072](https://via.placeholder.com/15/FA8072/000000?text=+) `FA8072`
+
+SandyBrown           = ![F4A460](https://via.placeholder.com/15/F4A460/000000?text=+) `F4A460`
+
+SeaGreen             = ![2E8B57](https://via.placeholder.com/15/2E8B57/000000?text=+) `2E8B57`
+
+SeaShell             = ![FFF5EE](https://via.placeholder.com/15/FFF5EE/000000?text=+) `FFF5EE`
+
+Sienna               = ![A0522D](https://via.placeholder.com/15/A0522D/000000?text=+) `A0522D`
+
+Silver               = ![C0C0C0](https://via.placeholder.com/15/C0C0C0/000000?text=+) `C0C0C0`
+
+SkyBlue              = ![87CEEB](https://via.placeholder.com/15/87CEEB/000000?text=+) `87CEEB`
+
+SlateBlue            = ![6A5ACD](https://via.placeholder.com/15/6A5ACD/000000?text=+) `6A5ACD`
+
+SlateGray            = ![708090](https://via.placeholder.com/15/708090/000000?text=+) `708090`
+
+Snow                 = ![FFFAFA](https://via.placeholder.com/15/FFFAFA/000000?text=+) `FFFAFA`
+
+SpringGreen          = ![00FF7F](https://via.placeholder.com/15/00FF7F/000000?text=+) `00FF7F`
+
+SteelBlue            = ![4682B4](https://via.placeholder.com/15/4682B4/000000?text=+) `4682B4`
+
+Tan                  = ![D2B48C](https://via.placeholder.com/15/D2B48C/000000?text=+) `D2B48C`
+
+Teal                 = ![008080](https://via.placeholder.com/15/008080/000000?text=+) `008080`
+
+Thistle              = ![D8BFD8](https://via.placeholder.com/15/D8BFD8/000000?text=+) `D8BFD8`
+
+Tomato               = ![FF6347](https://via.placeholder.com/15/FF6347/000000?text=+) `FF6347`
+
+Transparent          = ![FFFFFF](https://via.placeholder.com/15/FFFFFF/000000?text=+) `FFFFFF`
+
+Turquoise            = ![40E0D0](https://via.placeholder.com/15/40E0D0/000000?text=+) `40E0D0`
+
+Violet               = ![EE82EE](https://via.placeholder.com/15/EE82EE/000000?text=+) `EE82EE`
+
+Wheat                = ![F5DEB3](https://via.placeholder.com/15/F5DEB3/000000?text=+) `F5DEB3`
+
+White                = ![FFFFFF](https://via.placeholder.com/15/FFFFFF/000000?text=+) `FFFFFF`
+
+WhiteSmoke           = ![F5F5F5](https://via.placeholder.com/15/F5F5F5/000000?text=+) `F5F5F5`
+
+Yellow               = ![FFFF00](https://via.placeholder.com/15/FFFF00/000000?text=+) `FFFF00`
+
+YellowGreen          = ![9ACD32](https://via.placeholder.com/15/9ACD32/000000?text=+) `9ACD32`
+
