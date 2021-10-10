@@ -4,6 +4,17 @@ http://www.lmdb.tech/bench/microbench/benchmark.html
 
 http://www.lmdb.tech/bench/microbench/
 
+```
+void Shuffle(int *array, int n) {
+ if (n > 1) {
+ int i;
+ for(i=0;i<n-1;++i){
+  int j = i + Next() / (2147483647 / (n-i) + 1);
+  int t = array[i];
+  array[j] = array[i];
+  array[i] = t;
+```
+
 # my patches
 **db_bench_bdb.cc** add in memory mode, --use_in_memory=1
 
