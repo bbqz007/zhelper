@@ -5,6 +5,7 @@ http://www.lmdb.tech/bench/microbench/benchmark.html
 http://www.lmdb.tech/bench/microbench/
 
 ```
+/** add this member method to leveldb/util/Random.h */
 void Shuffle(int *array, int n) {
  if (n > 1) {
  int i;
@@ -13,6 +14,9 @@ void Shuffle(int *array, int n) {
   int t = array[i];
   array[j] = array[i];
   array[i] = t;
+ }
+ }
+} 
 ```
 
 # my patches
