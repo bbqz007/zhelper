@@ -47,6 +47,15 @@
 #include <libmemcached/memcached.h>
 #endif // WORKLOAD_WITH_MEMCACHE
 
+#define ON 1
+#define OFF 0
+
+/// Z#20211012 macro DEPRECATED_USE_SPINLOCK
+///  
+#define DEPRECATED_USE_SPINLOCK OFF
+
+
+
 void BM_yield0(benchmark::State& state)
 {
     using namespace std;
@@ -129,9 +138,9 @@ void rthread_free_local()
 #else
 #define N_TOTAL_MSG 100000
 #endif // WORKLOAD_WITH_REDIS || WORKLOAD_WITH_MEMCACHE
-#define N_RTHREADS 8
+#define N_RTHREADS 4
 #define N_RMSG_PER_THREAD (N_TOTAL_MSG/N_RTHREADS)
-#define N_WTHREADS 8
+#define N_WTHREADS 4
 #define N_WMSG_PER_THREAD (N_TOTAL_MSG/N_WTHREADS)
 
 #if (N_RTHREADS*N_RMSG_PER_THREAD) != (N_WTHREADS*N_WMSG_PER_THREAD)
@@ -1084,8 +1093,12 @@ void BM_deque2_lf_s(benchmark::State& state)
                     {
                         bool notify = false;
                         {
+#if DEPRECATED_USE_SPINLOCK == ON
                             while (!rlock.try_lock());
                             lock_guard<mutex> lgd(rlock, std::adopt_lock);
+#else
+                            lock_guard<mutex> lgd(rlock);
+#endif
                             while (leader)
                             {
                                 ++follower;
@@ -1387,8 +1400,12 @@ void BM_deque_lf_s(benchmark::State& state)
                     {
                         bool notify = false;
                         {
+#if DEPRECATED_USE_SPINLOCK == ON
                             while (!rlock.try_lock());
                             lock_guard<mutex> lgd(rlock, std::adopt_lock);
+#else
+                            lock_guard<mutex> lgd(rlock);
+#endif
                             while (leader)
                             {
                                 ++follower;
@@ -1497,8 +1514,12 @@ void BM_ypipe_lf_s(benchmark::State& state)
                     {
                         bool notify = false;
                         {
+#if DEPRECATED_USE_SPINLOCK == ON
                             while (!rlock.try_lock());
                             lock_guard<mutex> lgd(rlock, std::adopt_lock);
+#else
+                            lock_guard<mutex> lgd(rlock);
+#endif
                             while (leader)
                             {
                                 ++follower;
