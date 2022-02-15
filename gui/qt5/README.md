@@ -2,7 +2,7 @@
 
 #### a fork from zhelper_wxWidgets,  which can apply to qt5 window gui programming.
 
-[github.com/bbqz007/zhelper-wxWidgets](github.com/bbqz007/zhelper-wxWidgets).
+[github.com/bbqz007/zhelper-wxWidgets](https://github.com/bbqz007/zhelper-wxWidgets).
 
 ## how to use
 
