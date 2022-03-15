@@ -5,7 +5,7 @@ original code: https://github.com/petrohi/hiredispp
 
 the good thing of hiredis c client is that, you can use lib(ae/ev/uv/event) easily with redis.
 
-# patch `hiredispp` to support lambda and subscribe.
+### patch `hiredispp` to support lambda and subscribe.
 this version is patch to a fork.
 
 * 1. patch code at `hiredispp_async.h`
@@ -16,7 +16,7 @@ this version is patch to a fork.
 
 * 4. use disconnect lambda to manage your async redis connection object's lifetime.
 
-# examples
+### examples
 there are async samples to show:
 * 1. request/reply stateful
 * 2. pipeline, non request/reply and stateless
