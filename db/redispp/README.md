@@ -6,7 +6,7 @@ original code: https://github.com/petrohi/hiredispp
 the good thing of hiredis c client is that, you can use lib(ae/ev/uv/event) easily with redis.
 
 ### patch `hiredispp` to support lambda and subscribe.
-this version is patch to a fork.
+this version is a patch to a fork.
 
 * 1. patch code at `hiredispp_async.h`
 
