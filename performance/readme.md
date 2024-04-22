@@ -12,7 +12,8 @@
 * `valgrind --tool=callgrind`
   * `kcachegrind` to analysis 
 * `perf record`
-  * `perf report` to analysis 
+  * `perf report` to analysis
+    * `perf record -g -a -F 99 -o perf.data $YouCmd` and `perf report -i perf.data --threads`
 * `perf stat -e `
 * [coz](https://github.com/plasma-umass/coz), which is a causal profiler.
   * [Coz: Finding Code that Counts with Causal Profiling (pdf)](http://arxiv.org/pdf/1608.03676v1.pdf)
