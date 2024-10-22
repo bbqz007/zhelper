@@ -22,14 +22,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
 SOFTWARE.
 */
-#include <db_cxx.h>
+#ifdef _WIN32
+#define __NO_SYSTEM_INCLUDES
+#define pthread_t uintptr_t
+#define mkdir(path, ...) _mkdir(path)
+#endif
+#include "db_cxx.h"
 #include <vector>
 #include <stdio.h>
 #include <string.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifdef _WIN32
+#include <sys/unistd.h>
+#else
 #include <unistd.h>
+#endif
 
 #include <map>
 #include <unordered_map>
@@ -559,8 +568,10 @@ public:
             dbenv.set_tmp_dir(tmpDir_.c_str());
         if (!logDir_.empty())
             dbenv.set_lg_dir(logDir_.c_str());
+#if DB_VERSION_MAJOR > 4
         if (!metadataDir_.empty())
             dbenv.set_metadata_dir(metadataDir_.c_str());
+#endif
         if (!dataDirs_.empty())
             for (int i = 0; i < dataDirs_.size(); ++i)
                 dbenv.set_create_dir(dataDirs_[i].c_str());
@@ -655,6 +666,8 @@ public:
     this_type& init_subsys_mpool(bool set=true) {set_flags(DB_INIT_MPOOL, set); return *this;}
     this_type& init_subsys_rep(bool set=true) {set_flags(DB_INIT_REP, set); return *this;}
     this_type& init_subsys_txn(bool set=true) {set_flags(DB_INIT_TXN, set); return *this;}
+	this_type& init_as_inmemory(bool set = true) { set_flags(DB_PRIVATE, set); return *this; }
+	this_type& init_using_systemmemory(bool set = true) { set_flags(DB_SYSTEM_MEM, set); return *this; }
     this_type& check_if_recovery_needs(bool set=true) {set_flags(DB_REGISTER, set); return *this;}
     this_type& check_if_failchk_before_recovery(bool set=true) {set_flags(DB_FAILCHK, set); return *this;}
     this_type& recovery_before_open(bool set=true) {set_flags(DB_RECOVER, set); return *this;}
@@ -827,10 +840,16 @@ public:
     {
         return set_verbose(DB_VERB_REP_SYNC, b);
     }
+
     this_type& trace_rep_system(bool b = true)
     {
+#if DB_VERSION_MAJOR > 4
         return set_verbose(DB_VERB_REP_SYSTEM, b);
+#else 
+		return *this;
+#endif
     }
+
     this_type& trace_repmgr_connfail(bool b = true)
     {
         return set_verbose(DB_VERB_REPMGR_CONNFAIL, b);
@@ -871,7 +890,11 @@ struct DbBuilderConfig
     bool need_set_pagesize_;
     u_int32_t set_pagesize_pagesize_;
     bool need_set_dup_compare_;
+#if DB_VERSION_MAJOR <= 5
     typedef int (*dup_compare_fcn)(Db *, const Dbt *, const Dbt *);
+#else
+	typedef int(*dup_compare_fcn)(Db *, const Dbt *, const Dbt *, size_t*);
+#endif
     dup_compare_fcn set_dup_compare_fcn_;
     bool need_set_encrypt_;
     bool need_set_errcall_;
@@ -899,7 +922,11 @@ struct DbBuilderConfig
     typedef int (*db_append_recno_fcn)(Db *, Dbt *, db_recno_t);
     bool need_set_append_recno_;
     db_append_recno_fcn set_append_recno_fcn_;
+#if DB_VERSION_MAJOR <= 5
     typedef int (*bt_compare_fcn)(Db *, const Dbt *, const Dbt *);
+#else
+	typedef int(*bt_compare_fcn)(Db *, const Dbt *, const Dbt *, size_t*);
+#endif
     bool need_set_bt_compare_;
     bt_compare_fcn set_bt_compare_fcn_;
     bool need_set_bt_minkey_;
@@ -1084,7 +1111,7 @@ protected:
         CHECK_IF_SET(set_h_ffactor, c.set_h_ffactor_ffactor_);
         CHECK_IF_SET(set_h_hash, c.set_h_hash_fcn_);
         CHECK_IF_SET(set_h_nelem, c.set_h_nelem_h_nelem_);
-        CHECK_IF_SET(set_lk_exclusive, c.set_lk_exclusive_nowait_onoff_);
+        //CHECK_IF_SET(set_lk_exclusive, c.set_lk_exclusive_nowait_onoff_);
         CHECK_IF_SET(set_lorder, c.set_lorder_lorder_); // byte order, le or be
         CHECK_IF_SET_NORETURN(set_msgcall, c.set_msgcall_fcn_);
         CHECK_IF_SET_NORETURN(set_msgfile, c.set_msgfile_msgfile_);
