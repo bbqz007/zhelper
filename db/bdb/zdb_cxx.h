@@ -191,6 +191,7 @@ public:
 	{
 		check_if_clear(key_);
 		key_.set_data(&k);
+		key_.set_ulen(sizeof(k));	// Z#20241023, bug; when DB_DBT_USERMEM, ulen should be set. otherwise db.get() return DB_BUFFER_SMALL
 		key_.set_size(sizeof(k));
 		key_.set_flags(DB_DBT_USERMEM);
 	}
@@ -198,6 +199,7 @@ public:
 	{
 		check_if_clear(key_);
 		key_.set_data(k);
+		key_.set_ulen(size);
 		key_.set_size(size);
 		key_.set_flags(DB_DBT_USERMEM);
 	}
@@ -211,6 +213,7 @@ public:
 	{
 		check_if_clear(data_);
 		data_.set_data(&d);
+		data_.set_ulen(sizeof(d));
 		data_.set_size(sizeof(d));
 		data_.set_flags(DB_DBT_USERMEM);
 	}
@@ -218,6 +221,7 @@ public:
 	{
 		check_if_clear(data_);
 		data_.set_data(d);
+		data_.set_ulen(size);
 		data_.set_size(size);
 		data_.set_flags(DB_DBT_USERMEM);
 	}
@@ -1555,6 +1559,10 @@ public:
     {
         return db.get(txn, kv.key(), kv.data(), DB_GET_BOTH);
     }
+	static int check_if_key_exists(Db& db, Dbt* key, DbTxn* txn = NULL)
+	{
+		return db.exists(txn, key, 0);
+	}
 };
 
 class DbcGet : public OpGet<Dbc>
