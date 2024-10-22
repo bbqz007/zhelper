@@ -13,3 +13,8 @@ every usage of flags is wrapped as human readable method.
 **ScopeDbc** help you manage cursor in local scope.
 
 **DbGet**, **DbPut**, **DbcGet**, **DbcPut**, **DbcDupPut**, **DbCount** help you operato db or dbc via meaningful methods rather than flags, 
+
+
+### db-source
+* https://zeroc.com/ice/downloads/archive/ice/3.4.2
+		* https://download.zeroc.com/Ice/3.4/db48-4.8.30-1ice.src.rpm
